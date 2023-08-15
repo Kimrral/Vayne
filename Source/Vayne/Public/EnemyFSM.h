@@ -30,19 +30,29 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	UFUNCTION()
 	void TickIdle();
+	UFUNCTION()
 	void TickMove();
+	UFUNCTION()
 	void TickAttack();
+	UFUNCTION()
 	void TickDamage();
+	UFUNCTION()
 	void TickDie();
+	UFUNCTION()
 	void OnDamageProcess(int damageValue);
+	UFUNCTION()
 	void SetState(EEnemyState next);
+	UFUNCTION()
 	void MovementReenable();
+	UFUNCTION()
 	void SetRotToPlayer();
 	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	UPROPERTY()
 	EEnemyState state;
 
 	UPROPERTY()
@@ -58,13 +68,17 @@ public:
 	
 	UPROPERTY()
 	float curTime;
-
+	UPROPERTY()
 	bool bIsAttacking;
 
 	UPROPERTY()
 	int curHP;
 	UPROPERTY()
 	int maxHP = 100.0f;
+	UPROPERTY()
+	float attackDelayTime = 3;
+
+	bool bTickDie;
 
 
 

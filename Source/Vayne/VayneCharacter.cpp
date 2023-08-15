@@ -75,20 +75,24 @@ void AVayneCharacter::FireInput()
 	FVector startLoc = GetMesh()->GetSocketLocation(FName("SMG_Barrel"));
 	FVector endLoc = startLoc + GetActorForwardVector()*1000.0f;
 	DrawDebugLine(GetWorld(), startLoc, endLoc, FColor::Red, false, 2.0f);
-	bool bHit = GetWorld()->LineTraceMultiByChannel(hits, startLoc, endLoc, ECC_Visibility);
+	bool bHit = GetWorld()->LineTraceMultiByChannel(hits, startLoc, endLoc, ECC_Pawn);
 	if(bHit)
 	{
 		for(int i=0; i<hits.Num(); ++i)
 		{
 			hitActors = hits[i].GetActor();
-		}
-		auto enemy = Cast<AEnemy>(hitActors);
+		}		
 		if(hitActors)
 		{
-			UEnemyFSM* fsm = Cast<UEnemyFSM>(enemy->GetDefaultSubobjectByName(FName("enemyFSM")));
-			if(fsm)
+			AEnemy* enemy = Cast<AEnemy>(hitActors);
+			if(enemy)
 			{
-				fsm->OnDamageProcess(30);
+				UEnemyFSM* fsm = Cast<UEnemyFSM>(enemy->GetDefaultSubobjectByName(FName("enemyFSM")));
+				if(fsm)
+				{
+					fsm->OnDamageProcess(30);
+					enemy->OnDamaged();
+				}
 			}
 		}
 	}

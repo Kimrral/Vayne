@@ -47,10 +47,19 @@ public:
 	void AttackPattern1();
 
 	UFUNCTION()
-	void Die();
+	void OnDie();
+	
+	UFUNCTION()
+	void OnDamaged();
 
 	UFUNCTION()
-	void Damaged();
+	void OnDestroy();
+
+	UPROPERTY(EditAnywhere, Category=Montage)
+	UAnimMontage* damageMontage;
+
+	UPROPERTY(EditAnywhere, Category=Montage)
+	UAnimMontage* dieMontage;
 
 
 

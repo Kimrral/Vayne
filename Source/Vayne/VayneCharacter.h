@@ -52,5 +52,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category=Montage)
 	class UAnimMontage* FireMontage;
+
+
 };
 

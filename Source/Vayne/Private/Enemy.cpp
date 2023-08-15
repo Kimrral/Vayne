@@ -6,6 +6,7 @@
 #include "EnemyAnim.h"
 #include "EnemyFSM.h"
 #include "AI/NavigationSystemBase.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -76,11 +77,28 @@ void AEnemy::AttackPattern1()
 {
 }
 
-void AEnemy::Die()
+void AEnemy::OnDie()
 {
+	FTimerHandle destroyHandle;
+	GetController()->StopMovement();
+	GetCharacterMovement()->DisableMovement();
+	StopAnimMontage();
+	auto capsule = GetCapsuleComponent();
+	capsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetWorldTimerManager().SetTimer(destroyHandle, this, &AEnemy::OnDestroy, 10.0f, false);
 }
 
-void AEnemy::Damaged()
+void AEnemy::OnDamaged()
 {
+	GetController()->StopMovement();
+	GetCharacterMovement()->DisableMovement();
+	StopAnimMontage();
+	PlayAnimMontage(damageMontage, 1);
+}
+
+void AEnemy::OnDestroy()
+{
+	this->Destroy();
 }
 

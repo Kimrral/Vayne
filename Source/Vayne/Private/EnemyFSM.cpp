@@ -5,7 +5,6 @@
 
 #include "Enemy.h"
 #include "EnemyAnim.h"
-#include "AI/NavigationSystemBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -100,14 +99,13 @@ void UEnemyFSM::TickAttack()
 				if(player)
 				{
 					me->GetCharacterMovement()->DisableMovement();
-					SetRotToPlayer();
 					FTimerHandle movementHandle;
-					GetWorld()->GetTimerManager().SetTimer(movementHandle, this, &UEnemyFSM::MovementReenable, 0.5f, false);			
+					GetWorld()->GetTimerManager().SetTimer(movementHandle, this, &UEnemyFSM::MovementReenable, 0.8f, false);			
 				}
 			}
 		}
 	}
-	if(curTime>=2.1f)
+	if(curTime>=0.9f)
 	{
 		// 플레이어와의 거리 도출
 		float dist = player->GetDistanceTo(me);
@@ -137,10 +135,10 @@ void UEnemyFSM::TickDamage()
 
 void UEnemyFSM::TickDie()
 {
-	curTime+=GetWorld()->GetDeltaSeconds();
-	if(curTime>5)
+	if(bTickDie==false)
 	{
-		me->Destroy();
+		bTickDie=true;
+		me->OnDie();
 	}
 }
 
