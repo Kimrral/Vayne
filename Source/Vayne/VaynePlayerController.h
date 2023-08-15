@@ -39,8 +39,38 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputAction* SetDestinationTouchAction;
 
+	// Attack
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputAction* IA_Attack;
+
+	// Stop
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	class UInputAction* IA_Stop;
+
+	// Fire
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	class UInputAction* IA_Fire;
+
+	// Cam Zoom
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	class UInputAction* IA_CamZoom;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	class UInputAction* IA_CamZoomOut;
+
+	// Space
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	class UInputAction* IA_Space;
+
+	// Player Character Casting
+	UPROPERTY()
+	class AVayneCharacter* PlayerChar;
+
+	UFUNCTION()
+	void MovementReenable();
+
+
+
+	
 
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
@@ -57,9 +87,18 @@ protected:
 	void OnSetDestinationReleased();
 	void OnTouchTriggered();
 	void OnTouchReleased();
+	void OnAttack();
+	void OnAttackReleased();
+	void OnStop();
+	void OnFire();
+	void OnCamZoom();
+	void OnCamZoomOut();
+	void OnSpace();
 
 private:
+
 	FVector CachedDestination;
+	FRotator CachedRotation;
 
 	bool bIsTouch; // Is it a touch device
 	float FollowTime; // For how long it has been pressed

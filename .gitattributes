@@ -1,2 +1,9 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+Projects/Vayne/Content/ParagonLtBelica] filter=lfs diff=lfs merge=lfs -text
+[E:/Unreal filter=lfs diff=lfs merge=lfs -text
+5 filter=lfs diff=lfs merge=lfs -text
+Projects/Vayne/Content/ParagonMinions] filter=lfs diff=lfs merge=lfs -text
+[E:/Unreal filter=lfs diff=lfs merge=lfs -text
+[E:/Unreal filter=lfs diff=lfs merge=lfs -text
+Projects/Vayne/Content/Museum] filter=lfs diff=lfs merge=lfs -text

@@ -9,6 +9,11 @@
 #include "Engine/World.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "FrameTypes.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 
 AVaynePlayerController::AVaynePlayerController()
 {
@@ -16,6 +21,7 @@ AVaynePlayerController::AVaynePlayerController()
 	DefaultMouseCursor = EMouseCursor::Default;
 	CachedDestination = FVector::ZeroVector;
 	FollowTime = 0.f;
+	bEnableMouseOverEvents=true;
 }
 
 void AVaynePlayerController::BeginPlay()
@@ -23,11 +29,15 @@ void AVaynePlayerController::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 
+	// Player Casting
+	PlayerChar=Cast<AVayneCharacter>(GetPawn());
+
 	//Add Input Mapping Context
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
 		Subsystem->AddMappingContext(DefaultMappingContext, 0);
 	}
+	
 }
 
 void AVaynePlayerController::SetupInputComponent()
@@ -44,6 +54,24 @@ void AVaynePlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &AVaynePlayerController::OnSetDestinationReleased);
 		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Canceled, this, &AVaynePlayerController::OnSetDestinationReleased);
 
+		// Attack input events
+		EnhancedInputComponent->BindAction(IA_Attack, ETriggerEvent::Triggered, this, &AVaynePlayerController::OnAttack);
+		EnhancedInputComponent->BindAction(IA_Attack, ETriggerEvent::Completed, this, &AVaynePlayerController::OnAttackReleased);
+
+		// Stop input events
+		EnhancedInputComponent->BindAction(IA_Stop, ETriggerEvent::Triggered, this, &AVaynePlayerController::OnStop);
+
+		// Fire input events
+		EnhancedInputComponent->BindAction(IA_Fire, ETriggerEvent::Triggered, this, &AVaynePlayerController::OnFire);
+
+		// Cam Zoom input events
+		EnhancedInputComponent->BindAction(IA_CamZoom, ETriggerEvent::Triggered, this, &AVaynePlayerController::OnCamZoom);
+		EnhancedInputComponent->BindAction(IA_CamZoomOut, ETriggerEvent::Triggered, this, &AVaynePlayerController::OnCamZoomOut);
+
+		// Space input events
+		EnhancedInputComponent->BindAction(IA_Space, ETriggerEvent::Triggered, this, &AVaynePlayerController::OnSpace);
+
+		
 		// Setup touch input events
 		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Started, this, &AVaynePlayerController::OnInputStarted);
 		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Triggered, this, &AVaynePlayerController::OnTouchTriggered);
@@ -72,7 +100,7 @@ void AVaynePlayerController::OnSetDestinationTriggered()
 	}
 	else
 	{
-		bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
+		bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1, true, Hit);
 	}
 
 	// If we hit a surface, cache the location
@@ -114,4 +142,67 @@ void AVaynePlayerController::OnTouchReleased()
 {
 	bIsTouch = false;
 	OnSetDestinationReleased();
+}
+
+void AVaynePlayerController::OnAttack()
+{
+	if(PlayerChar)
+	PlayerChar->AttackCircle->SetVisibility(true);
+}
+
+void AVaynePlayerController::OnAttackReleased()
+{
+	if(PlayerChar)
+	PlayerChar->AttackCircle->SetVisibility(false);
+}
+
+void AVaynePlayerController::OnStop()
+{
+	StopMovement();
+}
+
+void AVaynePlayerController::OnFire()
+{
+	FHitResult Hit;
+	bool bHitSuccessful = false;
+	bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
+	if (bHitSuccessful)
+	{
+		CachedDestination = Hit.Location;
+		if(PlayerChar)
+		{
+			PlayerChar->GetCharacterMovement()->DisableMovement();
+			StopMovement();
+			bool isMontagePlaying = PlayerChar->GetMesh()->GetAnimInstance()->IsAnyMontagePlaying();
+			if(!isMontagePlaying)
+			{
+				FVector WorldDirection = (CachedDestination - PlayerChar->GetActorLocation());
+				auto fireRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, PlayerChar->GetActorUpVector());
+				PlayerChar->SetActorRotation(FRotator(0, fireRot.Yaw, 0));
+				PlayerChar->FireInput();
+			}
+			FTimerHandle movementHandle;
+			GetWorldTimerManager().SetTimer(movementHandle, this, &AVaynePlayerController::MovementReenable, 0.2f, false);			
+		}
+	}
+}
+
+void AVaynePlayerController::OnCamZoom()
+{
+	PlayerChar->CameraBoom->TargetArmLength=FMath::Clamp(PlayerChar->CameraBoom->TargetArmLength-=100, 600, 2500);
+}
+
+void AVaynePlayerController::OnCamZoomOut()
+{
+	PlayerChar->CameraBoom->TargetArmLength=FMath::Clamp(PlayerChar->CameraBoom->TargetArmLength+=100, 600, 2500);
+}
+
+void AVaynePlayerController::OnSpace()
+{
+}
+
+void AVaynePlayerController::MovementReenable()
+{
+	if(PlayerChar)
+	PlayerChar->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 }

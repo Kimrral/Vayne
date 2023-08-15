@@ -23,7 +23,7 @@ AVayneCharacter::AVayneCharacter()
 
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Rotate character to moving direction
-	GetCharacterMovement()->RotationRate = FRotator(0.f, 640.f, 0.f);
+	GetCharacterMovement()->RotationRate = FRotator(0.f, 730.f, 0.f);
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
 
@@ -40,12 +40,61 @@ AVayneCharacter::AVayneCharacter()
 	TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	TopDownCameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
+	// Attack Circle Particle
+	AttackCircle = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AttackCircle"));
+	AttackCircle->SetupAttachment(RootComponent);
+	AttackCircle->SetVisibility(false);
+	AttackCircle->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
+
+	// Character Mesh Setup
+	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+	GetMesh()->OnBeginCursorOver.AddDynamic(this, &AVayneCharacter::CursorOver);
+	GetMesh()->OnEndCursorOver.AddDynamic(this, &AVayneCharacter::CursorOverEnd);
 }
 
 void AVayneCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+}
+
+void AVayneCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+
+}
+
+void AVayneCharacter::FireInput()
+{
+	PlayAnimMontage(FireMontage, 1);
+	TArray<FHitResult> hits;
+	FVector startLoc = GetMesh()->GetSocketLocation(FName("SMG_Barrel"));
+	FVector endLoc = startLoc + GetActorForwardVector()*1000.0f;
+	DrawDebugLine(GetWorld(), startLoc, endLoc, FColor::Red, false, 2.0f);
+	bool bHit = GetWorld()->LineTraceMultiByChannel(hits, startLoc, endLoc, ECC_Visibility);
+	if(bHit)
+	{
+		for(int i=0; i<hits.Num(); ++i)
+		{
+			hitActors = hits[i].GetActor();
+		}
+		if(hitActors)
+		{
+			
+		}
+	}
+}
+
+void AVayneCharacter::CursorOver(UPrimitiveComponent* primComp)
+{
+	GetMesh()->SetRenderCustomDepth(true);
+}
+
+void AVayneCharacter::CursorOverEnd(UPrimitiveComponent* primComp)
+{
+	GetMesh()->SetRenderCustomDepth(false);
 }
