@@ -32,4 +32,27 @@ public:
 	UFUNCTION()
 	void CursorOverEnd(UPrimitiveComponent* primComp);
 
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=FSM)
+	class UEnemyFSM* enemyFSM;
+
+	UPROPERTY()
+	class UEnemyAnim* enemyAnim;
+
+	UFUNCTION()
+	void Move();
+	
+	UFUNCTION()
+	void AttackPattern1();
+
+	UFUNCTION()
+	void Die();
+
+	UFUNCTION()
+	void Damaged();
+
+
+
+
 };

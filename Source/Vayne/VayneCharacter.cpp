@@ -1,6 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "VayneCharacter.h"
+
+#include "Enemy.h"
+#include "EnemyFSM.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Camera/CameraComponent.h"
 #include "Components/DecalComponent.h"
@@ -23,7 +26,7 @@ AVayneCharacter::AVayneCharacter()
 
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Rotate character to moving direction
-	GetCharacterMovement()->RotationRate = FRotator(0.f, 730.f, 0.f);
+	GetCharacterMovement()->RotationRate = FRotator(0.f, 700.f, 0.f);
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
 
@@ -52,8 +55,6 @@ AVayneCharacter::AVayneCharacter()
 
 	// Character Mesh Setup
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
-	GetMesh()->OnBeginCursorOver.AddDynamic(this, &AVayneCharacter::CursorOver);
-	GetMesh()->OnEndCursorOver.AddDynamic(this, &AVayneCharacter::CursorOverEnd);
 }
 
 void AVayneCharacter::Tick(float DeltaSeconds)
@@ -64,7 +65,6 @@ void AVayneCharacter::Tick(float DeltaSeconds)
 void AVayneCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
 
 }
 
@@ -82,19 +82,24 @@ void AVayneCharacter::FireInput()
 		{
 			hitActors = hits[i].GetActor();
 		}
+		auto enemy = Cast<AEnemy>(hitActors);
 		if(hitActors)
 		{
-			
+			UEnemyFSM* fsm = Cast<UEnemyFSM>(enemy->GetDefaultSubobjectByName(FName("enemyFSM")));
+			if(fsm)
+			{
+				fsm->OnDamageProcess(30);
+			}
 		}
 	}
 }
 
 void AVayneCharacter::CursorOver(UPrimitiveComponent* primComp)
 {
-	GetMesh()->SetRenderCustomDepth(true);
+	//GetMesh()->SetRenderCustomDepth(true);
 }
 
 void AVayneCharacter::CursorOverEnd(UPrimitiveComponent* primComp)
 {
-	GetMesh()->SetRenderCustomDepth(false);
+	//GetMesh()->SetRenderCustomDepth(false);
 }

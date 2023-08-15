@@ -3,24 +3,43 @@
 
 #include "Enemy.h"
 
+#include "EnemyAnim.h"
+#include "EnemyFSM.h"
+#include "AI/NavigationSystemBase.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
 // Sets default values
 AEnemy::AEnemy()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	// Enemy FSM
+	enemyFSM=CreateDefaultSubobject<UEnemyFSM>(TEXT("enemyFSM"));
+
 	
 	// Character Mesh Setup
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	GetMesh()->OnBeginCursorOver.AddDynamic(this, &AEnemy::CursorOver);
 	GetMesh()->OnEndCursorOver.AddDynamic(this, &AEnemy::CursorOverEnd);
-	
+
+	// Set Walk Speed
+	GetCharacterMovement()->MaxWalkSpeed=200.f;
+
+	// Enemy Anim Blueprints
+	ConstructorHelpers::FClassFinder<UAnimInstance> tempAnim(TEXT("/Script/Engine.AnimBlueprint'/Game/Blueprints/ABP_Guardian.ABP_Guardian_C'"));
+	if(tempAnim.Succeeded())
+	{
+		GetMesh()->SetAnimInstanceClass(tempAnim.Class);
+	}
 }
 
 // Called when the game starts or when spawned
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	enemyAnim = Cast<UEnemyAnim>(GetMesh()->GetAnimInstance());	
 }
 
 // Called every frame
@@ -39,11 +58,29 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AEnemy::CursorOver(UPrimitiveComponent* primComp)
 {
+	// Outline Render
 	GetMesh()->SetRenderCustomDepth(true);
 }
 
 void AEnemy::CursorOverEnd(UPrimitiveComponent* primComp)
 {
+	// Outline Render
 	GetMesh()->SetRenderCustomDepth(false);
+}
+
+void AEnemy::Move()
+{
+}
+
+void AEnemy::AttackPattern1()
+{
+}
+
+void AEnemy::Die()
+{
+}
+
+void AEnemy::Damaged()
+{
 }
 

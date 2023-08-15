@@ -165,7 +165,7 @@ void AVaynePlayerController::OnFire()
 {
 	FHitResult Hit;
 	bool bHitSuccessful = false;
-	bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
+	bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1, true, Hit);
 	if (bHitSuccessful)
 	{
 		CachedDestination = Hit.Location;
