@@ -39,8 +39,8 @@ void UEnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	me->enemyAnim->state = this->state;
-
+	//SetRotToPlayer();
+	
 	switch (state)
 	{
 	case EEnemyState::IDLE:
@@ -76,19 +76,17 @@ void UEnemyFSM::TickIdle()
 void UEnemyFSM::TickMove()
 {
 	FVector dir = player->GetActorLocation() - me->GetActorLocation();
-	me->AddMovementInput(dir.GetSafeNormal());
 	SetRotToPlayer();
+	me->AddMovementInput(dir.GetSafeNormal());	
 	float dist = player->GetDistanceTo(me);
 	if(dist<=attackRange)
 	{
-		me->GetCharacterMovement()->MaxWalkSpeed=250.0f;
 		SetState(EEnemyState::ATTACK);
 	}
 }
 
 void UEnemyFSM::TickAttack()
 {
-	curTime+=GetWorld()->GetDeltaSeconds();
 	if(!bIsAttacking&&curTime>=0.1f)
 	{
 		me->enemyAnim->bIsAttacking=true;
@@ -104,7 +102,7 @@ void UEnemyFSM::TickAttack()
 			}
 		}
 	}
-	if(curTime>=attackDelayTime)
+	if(curTime>=attackDelayTime&&bIsAttackReady==true)
 	{
 		// 플레이어와의 거리 도출
 		float dist = player->GetDistanceTo(me);

@@ -23,11 +23,17 @@ void UEnemyAnim::AnimNotify_AttackStart()
 	UEnemyFSM* fsm = Cast<UEnemyFSM>(me->GetDefaultSubobjectByName(FName("enemyFSM")));
 	if(fsm)
 	{
-		me->enemyFSM->SetRotToPlayer();		
+		me->enemyFSM->SetRotToPlayer();
+		me->enemyFSM->bIsAttackReady=false;
 	}
 }
 
-void UEnemyAnim::AnimNotify_DamageEnd()
+void UEnemyAnim::AnimNotify_AttackEnd()
 {
-	me->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+	UEnemyFSM* fsm = Cast<UEnemyFSM>(me->GetDefaultSubobjectByName(FName("enemyFSM")));
+	if(fsm)
+	{
+		me->enemyFSM->bIsAttackReady=true;
+	}
 }
+

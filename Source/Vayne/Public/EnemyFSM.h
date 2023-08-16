@@ -61,7 +61,7 @@ public:
 	class AEnemy* me;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float aggressiveRange = 500.f;
+	float aggressiveRange = 600.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float attackRange = 300.f;
 	
@@ -75,7 +75,7 @@ public:
 	UPROPERTY()
 	int maxHP = 100.0f;
 	UPROPERTY()
-	float attackDelayTime = 2.1f;
+	float attackDelayTime = 3.1f;
 
 	bool bTickDie;
 
@@ -86,7 +86,10 @@ public:
 	FTimeline Timeline;					
 
 	UPROPERTY(EditAnywhere)  // Timeline 커브
-	UCurveFloat* CurveFloat;  
+	UCurveFloat* CurveFloat;
+
+	UPROPERTY()
+	bool bIsAttackReady;
 
 
 

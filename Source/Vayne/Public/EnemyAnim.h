@@ -23,9 +23,9 @@ public:
 
 	UFUNCTION()
 	void AnimNotify_AttackStart();
-	
+
 	UFUNCTION()
-	void AnimNotify_DamageEnd();
+	void AnimNotify_AttackEnd();
 	
 	// Casting 변수를 전역변수로 선언한다.
 	UPROPERTY()
