@@ -8,6 +8,7 @@
 #include "AI/NavigationSystemBase.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 AEnemy::AEnemy()

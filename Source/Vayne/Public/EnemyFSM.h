@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Components/TimelineComponent.h"
 #include "EnemyFSM.generated.h"
 
 UENUM(BlueprintType)
@@ -77,6 +78,15 @@ public:
 	float attackDelayTime = 2.1f;
 
 	bool bTickDie;
+
+	UPROPERTY()
+	float alpha;
+
+	UPROPERTY(EditAnywhere)  // Timeline 생성
+	FTimeline Timeline;					
+
+	UPROPERTY(EditAnywhere)  // Timeline 커브
+	UCurveFloat* CurveFloat;  
 
 
 

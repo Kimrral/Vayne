@@ -6,6 +6,7 @@
 #include "Templates/SubclassOf.h"
 #include "GameFramework/PlayerController.h"
 #include "InputActionValue.h"
+#include "Components/TimelineComponent.h"
 #include "VaynePlayerController.generated.h"
 
 /** Forward declaration to improve compiling times */
@@ -68,6 +69,21 @@ public:
 	UFUNCTION()
 	void MovementReenable();
 
+	UPROPERTY()
+	float alpha;
+
+	UPROPERTY(EditAnywhere)  // Timeline 생성
+	FTimeline Timeline;					
+
+	UPROPERTY(EditAnywhere)  // Timeline 커브
+	UCurveFloat* CurveFloat;  
+
+	UFUNCTION()  // Bind function
+	void SetPlayerRot(float Value);
+
+	UFUNCTION()
+	void SetPlayerRotNoLerp();
+
 
 
 	
@@ -80,6 +96,8 @@ protected:
 	
 	// To add mapping context
 	virtual void BeginPlay();
+
+	virtual void Tick(float DeltaSeconds) override;
 
 	/** Input handlers for SetDestination action. */
 	void OnInputStarted();
@@ -102,6 +120,7 @@ private:
 
 	bool bIsTouch; // Is it a touch device
 	float FollowTime; // For how long it has been pressed
+
 };
 
 

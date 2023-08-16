@@ -37,7 +37,39 @@ void AVaynePlayerController::BeginPlay()
 	{
 		Subsystem->AddMappingContext(DefaultMappingContext, 0);
 	}
+
+	// Timeline Binding
+	if (CurveFloat)
+	{
+		FOnTimelineFloat TimelineProgress;
+		TimelineProgress.BindDynamic(this, &AVaynePlayerController::SetPlayerRot);
+		Timeline.AddInterpFloat(CurveFloat, TimelineProgress);
+	}
 	
+}
+
+void AVaynePlayerController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	Timeline.TickTimeline(DeltaSeconds);
+}
+
+void AVaynePlayerController::SetPlayerRot(float Value)
+{
+	FVector WorldDirection = (CachedDestination - PlayerChar->GetActorLocation());
+	auto fireRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, PlayerChar->GetActorUpVector());
+	auto startRot = PlayerChar->GetActorRotation();
+	auto endRot = fireRot;
+	auto lerp = UKismetMathLibrary::RLerp(startRot, endRot, Value, true);
+	PlayerChar->SetActorRotation(FRotator(0, lerp.Yaw, 0));
+}
+
+void AVaynePlayerController::SetPlayerRotNoLerp()
+{
+	FVector WorldDirection = (CachedDestination - PlayerChar->GetActorLocation());
+	auto fireRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, PlayerChar->GetActorUpVector());
+	PlayerChar->SetActorRotation(FRotator(0, fireRot.Yaw, 0));
 }
 
 void AVaynePlayerController::SetupInputComponent()
@@ -114,6 +146,7 @@ void AVaynePlayerController::OnSetDestinationTriggered()
 	if (ControlledPawn != nullptr)
 	{
 		FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
+		Timeline.Play();
 		ControlledPawn->AddMovementInput(WorldDirection, 1.0, false);
 	}
 }
@@ -124,6 +157,7 @@ void AVaynePlayerController::OnSetDestinationReleased()
 	if (FollowTime <= ShortPressThreshold)
 	{
 		// We move there and spawn some particles
+		Timeline.Play();
 		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, CachedDestination);
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, CachedDestination, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
 	}
@@ -176,13 +210,7 @@ void AVaynePlayerController::OnFire()
 			bool isMontagePlaying = PlayerChar->GetMesh()->GetAnimInstance()->IsAnyMontagePlaying();
 			if(!isMontagePlaying)
 			{
-				FVector WorldDirection = (CachedDestination - PlayerChar->GetActorLocation());
-				auto fireRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, PlayerChar->GetActorUpVector());
-				//auto startRot = PlayerChar->GetActorRotation().Yaw;
-				//auto endRot = fireRot.Yaw;
-				//auto alpha = GetWorld()->GetDeltaSeconds()/144;
-				//auto lerp = FMath::Lerp(startRot, endRot, alpha);
-				PlayerChar->SetActorRotation(FRotator(0, fireRot.Yaw, 0));
+				SetPlayerRotNoLerp();
 				PlayerChar->FireInput();
 			}
 			FTimerHandle movementHandle;
