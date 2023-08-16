@@ -178,6 +178,10 @@ void AVaynePlayerController::OnFire()
 			{
 				FVector WorldDirection = (CachedDestination - PlayerChar->GetActorLocation());
 				auto fireRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, PlayerChar->GetActorUpVector());
+				//auto startRot = PlayerChar->GetActorRotation().Yaw;
+				//auto endRot = fireRot.Yaw;
+				//auto alpha = GetWorld()->GetDeltaSeconds()/144;
+				//auto lerp = FMath::Lerp(startRot, endRot, alpha);
 				PlayerChar->SetActorRotation(FRotator(0, fireRot.Yaw, 0));
 				PlayerChar->FireInput();
 			}

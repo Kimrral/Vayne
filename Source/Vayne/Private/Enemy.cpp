@@ -73,9 +73,7 @@ void AEnemy::Move()
 {
 }
 
-void AEnemy::AttackPattern1()
-{
-}
+
 
 void AEnemy::OnDie()
 {

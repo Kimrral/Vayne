@@ -45,8 +45,6 @@ public:
 	UFUNCTION()
 	void SetState(EEnemyState next);
 	UFUNCTION()
-	void MovementReenable();
-	UFUNCTION()
 	void SetRotToPlayer();
 	
 	// Called every frame
@@ -76,9 +74,11 @@ public:
 	UPROPERTY()
 	int maxHP = 100.0f;
 	UPROPERTY()
-	float attackDelayTime = 3;
+	float attackDelayTime = 2.1f;
 
 	bool bTickDie;
+
+
 
 
 

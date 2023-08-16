@@ -30,5 +30,8 @@ public:
 	// Casting 변수를 전역변수로 선언한다.
 	UPROPERTY()
 	class AEnemy* me;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bIsAttacking;
 	
 };

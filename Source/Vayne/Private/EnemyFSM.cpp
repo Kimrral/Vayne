@@ -91,6 +91,7 @@ void UEnemyFSM::TickAttack()
 	curTime+=GetWorld()->GetDeltaSeconds();
 	if(!bIsAttacking&&curTime>=0.1f)
 	{
+		me->enemyAnim->bIsAttacking=true;
 		bIsAttacking=true;
 		float dist = player->GetDistanceTo(me);
 		{
@@ -98,14 +99,12 @@ void UEnemyFSM::TickAttack()
 			{
 				if(player)
 				{
-					me->GetCharacterMovement()->DisableMovement();
-					FTimerHandle movementHandle;
-					GetWorld()->GetTimerManager().SetTimer(movementHandle, this, &UEnemyFSM::MovementReenable, 0.8f, false);			
+		
 				}
 			}
 		}
 	}
-	if(curTime>=0.9f)
+	if(curTime>=attackDelayTime)
 	{
 		// 플레이어와의 거리 도출
 		float dist = player->GetDistanceTo(me);
@@ -119,6 +118,7 @@ void UEnemyFSM::TickAttack()
 		{
 			curTime=0;
 			bIsAttacking=false;
+			me->enemyAnim->bIsAttacking=false;
 		}
 	}
 }
@@ -164,16 +164,14 @@ void UEnemyFSM::SetState(EEnemyState next)
 	me->enemyAnim->state=next;
 }
 
-void UEnemyFSM::MovementReenable()
-{
-	me->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-}
-
 void UEnemyFSM::SetRotToPlayer()
 {
-	FVector dir = player->GetActorLocation() - me->GetActorLocation();
-	FRotator attackRot = UKismetMathLibrary::MakeRotFromXZ(dir, player->GetActorUpVector());
-	me->SetActorRotation(FRotator(0, attackRot.Yaw, 0));
+	if(player)
+	{
+		FVector dir = player->GetActorLocation() - me->GetActorLocation();
+		FRotator attackRot = UKismetMathLibrary::MakeRotFromXZ(dir, player->GetActorUpVector());
+		me->SetActorRotation(FRotator(0, attackRot.Yaw, 0));
+	}
 }
 
 

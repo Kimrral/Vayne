@@ -42,9 +42,6 @@ public:
 
 	UFUNCTION()
 	void Move();
-	
-	UFUNCTION()
-	void AttackPattern1();
 
 	UFUNCTION()
 	void OnDie();
