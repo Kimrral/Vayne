@@ -91,6 +91,9 @@ public:
 	UPROPERTY()
 	bool bIsAttackReady;
 
+	UPROPERTY()
+	FVector originPosition;
+
 
 
 

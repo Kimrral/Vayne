@@ -36,3 +36,8 @@ void UEnemyAnim::AnimNotify_AttackEnd()
 	}
 }
 
+void UEnemyAnim::AnimNotify_DamageEnd()
+{
+	me->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+}
+

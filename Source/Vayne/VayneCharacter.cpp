@@ -82,16 +82,18 @@ void AVayneCharacter::FireInput()
 		for(int i=0; i<hits.Num(); ++i)
 		{
 			hitActors = hits[i].GetActor();
+			enemyArrayNum=i;
 		}		
 		if(hitActors)
 		{
 			AEnemy* enemy = Cast<AEnemy>(hitActors);
 			if(enemy)
 			{
+				auto emitterLoc = enemy->GetMesh()->GetSocketLocation(FName("HitEffectSocket"));
 				UEnemyFSM* fsm = Cast<UEnemyFSM>(enemy->GetDefaultSubobjectByName(FName("enemyFSM")));
 				if(fsm)
 				{
-					//UGameplayStatics::SpawnEmitterAtLocation()
+					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,emitterLoc);
 					fsm->OnDamageProcess(30);
 					enemy->OnDamaged();
 				}

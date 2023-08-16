@@ -31,6 +31,9 @@ void UEnemyFSM::BeginPlay()
 	
 	// Set HP
 	curHP=maxHP;
+
+	// Origin Location
+	originPosition = me->GetActorLocation();
 	
 }
 
@@ -98,7 +101,7 @@ void UEnemyFSM::TickAttack()
 			{
 				if(player)
 				{
-		
+					
 				}
 			}
 		}

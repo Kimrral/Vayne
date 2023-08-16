@@ -53,6 +53,15 @@ public:
 	UPROPERTY(EditAnywhere, Category=Montage)
 	class UAnimMontage* FireMontage;
 	
+	UPROPERTY(EditAnywhere)
+	class UParticleSystem* bulletImpactFactory;
+
+	UPROPERTY()
+	FTransform bulletImpactTrans;
+
+	UPROPERTY()
+	int32 enemyArrayNum;
+	
 
 
 };

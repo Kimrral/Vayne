@@ -91,7 +91,7 @@ void AEnemy::OnDie()
 void AEnemy::OnDamaged()
 {
 	GetController()->StopMovement();
-	//GetCharacterMovement()->DisableMovement();
+	GetCharacterMovement()->DisableMovement();
 	StopAnimMontage();
 	PlayAnimMontage(damageMontage, 1);
 }
