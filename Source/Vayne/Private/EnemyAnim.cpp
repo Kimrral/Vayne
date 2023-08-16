@@ -33,7 +33,6 @@ void UEnemyAnim::AnimNotify_AttackEnd()
 	UEnemyFSM* fsm = Cast<UEnemyFSM>(me->GetDefaultSubobjectByName(FName("enemyFSM")));
 	if(fsm)
 	{
-		me->enemyFSM->bIsAttackReady=true;
 	}
 }
 

@@ -75,7 +75,7 @@ public:
 	UPROPERTY()
 	int maxHP = 100.0f;
 	UPROPERTY()
-	float attackDelayTime = 3.1f;
+	float attackDelayTime = 1.5f;
 
 	bool bTickDie;
 

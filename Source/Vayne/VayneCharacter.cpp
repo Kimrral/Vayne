@@ -13,6 +13,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Materials/Material.h"
 #include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
 
 AVayneCharacter::AVayneCharacter()
 {
@@ -90,6 +91,7 @@ void AVayneCharacter::FireInput()
 				UEnemyFSM* fsm = Cast<UEnemyFSM>(enemy->GetDefaultSubobjectByName(FName("enemyFSM")));
 				if(fsm)
 				{
+					//UGameplayStatics::SpawnEmitterAtLocation()
 					fsm->OnDamageProcess(30);
 					enemy->OnDamaged();
 				}

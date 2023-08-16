@@ -87,6 +87,7 @@ void UEnemyFSM::TickMove()
 
 void UEnemyFSM::TickAttack()
 {
+	curTime+=GetWorld()->DeltaTimeSeconds;
 	if(!bIsAttacking&&curTime>=0.1f)
 	{
 		me->enemyAnim->bIsAttacking=true;
@@ -102,7 +103,7 @@ void UEnemyFSM::TickAttack()
 			}
 		}
 	}
-	if(curTime>=attackDelayTime&&bIsAttackReady==true)
+	if(curTime>=attackDelayTime)
 	{
 		// 플레이어와의 거리 도출
 		float dist = player->GetDistanceTo(me);
