@@ -60,9 +60,9 @@ public:
 	UPROPERTY()
 	class AEnemy* me;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=EnemySettings)
 	float aggressiveRange = 600.f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=EnemySettings)
 	float attackRange = 300.f;
 	
 	UPROPERTY()
@@ -72,11 +72,12 @@ public:
 
 	UPROPERTY()
 	int curHP;
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=EnemySettings)
 	int maxHP = 100.0f;
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=EnemySettings)
 	float attackDelayTime = 1.5f;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=EnemySettings)
+	float maxWalkSpeed = 200.0f;
 	bool bTickDie;
 
 	UPROPERTY()

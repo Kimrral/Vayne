@@ -34,6 +34,9 @@ void UEnemyFSM::BeginPlay()
 
 	// Origin Location
 	originPosition = me->GetActorLocation();
+
+	// Set MoveSpeed
+	me->GetCharacterMovement()->MaxWalkSpeed=maxWalkSpeed;
 	
 }
 

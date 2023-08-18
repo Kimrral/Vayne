@@ -79,7 +79,7 @@ void AVayneCharacter::FireInput()
 		FVector startLoc = GetMesh()->GetSocketLocation(FName("SMG_Barrel"));
 		FVector endLoc = startLoc + GetActorForwardVector()*500.0f;
 		FRotator fireRot = GetMesh()->GetSocketRotation("SMG_Barrel");
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), targetFireFactory,startLoc, fireRot, FVector(1, 1, 1));
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), targetFireFactory,startLoc, fireRot, FVector(0.7, 2, 1));
 	}
 	else
 	{
