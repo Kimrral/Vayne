@@ -146,7 +146,7 @@ void AVaynePlayerController::OnSetDestinationTriggered()
 	if (ControlledPawn != nullptr)
 	{
 		FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
-		Timeline.Play();
+		Timeline.PlayFromStart();
 		ControlledPawn->AddMovementInput(WorldDirection, 1.0, false);
 	}
 }
@@ -157,7 +157,7 @@ void AVaynePlayerController::OnSetDestinationReleased()
 	if (FollowTime <= ShortPressThreshold)
 	{
 		// We move there and spawn some particles
-		Timeline.Play();
+		Timeline.PlayFromStart();
 		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, CachedDestination);
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, CachedDestination, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
 	}

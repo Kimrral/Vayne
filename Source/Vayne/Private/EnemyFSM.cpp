@@ -5,6 +5,7 @@
 
 #include "Enemy.h"
 #include "EnemyAnim.h"
+#include "EntitySystem/MovieSceneEntitySystemRunner.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -37,6 +38,14 @@ void UEnemyFSM::BeginPlay()
 
 	// Set MoveSpeed
 	me->GetCharacterMovement()->MaxWalkSpeed=maxWalkSpeed;
+
+	// Timeline Binding
+	if (CurveFloat)
+	{
+		FOnTimelineFloat TimelineProgress;
+		TimelineProgress.BindDynamic(this, &UEnemyFSM::SetRotToPlayer);
+		Timeline.AddInterpFloat(CurveFloat, TimelineProgress);
+	}
 	
 }
 
@@ -45,7 +54,7 @@ void UEnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	//SetRotToPlayer();
+	Timeline.TickTimeline(DeltaTime);
 	
 	switch (state)
 	{
@@ -81,9 +90,9 @@ void UEnemyFSM::TickIdle()
 
 void UEnemyFSM::TickMove()
 {
-	FVector dir = player->GetActorLocation() - me->GetActorLocation();	
-	me->AddMovementInput(dir.GetSafeNormal());
-	SetRotToPlayer();
+	FVector dir = player->GetActorLocation() - me->GetActorLocation();
+	Timeline.PlayFromStart();
+	me->AddMovementInput(dir.GetSafeNormal());	
 	float dist = player->GetDistanceTo(me);
 	if(dist<=attackRange)
 	{
@@ -140,6 +149,7 @@ void UEnemyFSM::TickDamage()
 
 void UEnemyFSM::TickDie()
 {
+	Timeline.Stop();
 	if(bTickDie==false)
 	{
 		bTickDie=true;
@@ -169,13 +179,16 @@ void UEnemyFSM::SetState(EEnemyState next)
 	me->enemyAnim->state=next;
 }
 
-void UEnemyFSM::SetRotToPlayer()
+void UEnemyFSM::SetRotToPlayer(float Value)
 {
 	if(player)
 	{
 		FVector dir = player->GetActorLocation() - me->GetActorLocation();
 		FRotator attackRot = UKismetMathLibrary::MakeRotFromXZ(dir, player->GetActorUpVector());
-		me->SetActorRotation(FRotator(0, attackRot.Yaw, 0));
+		auto startRot = me->GetActorRotation();
+		auto endRot = attackRot;
+		auto lerp = UKismetMathLibrary::RLerp(startRot, endRot, Value, true);
+		me->SetActorRotation(FRotator(0, lerp.Yaw, 0));
 	}
 }
 

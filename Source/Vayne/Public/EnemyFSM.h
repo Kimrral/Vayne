@@ -46,7 +46,7 @@ public:
 	UFUNCTION()
 	void SetState(EEnemyState next);
 	UFUNCTION()
-	void SetRotToPlayer();
+	void SetRotToPlayer(float Value);
 	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -94,6 +94,7 @@ public:
 
 	UPROPERTY()
 	FVector originPosition;
+	
 
 
 

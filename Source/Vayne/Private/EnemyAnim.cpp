@@ -23,7 +23,7 @@ void UEnemyAnim::AnimNotify_AttackStart()
 	UEnemyFSM* fsm = Cast<UEnemyFSM>(me->GetDefaultSubobjectByName(FName("enemyFSM")));
 	if(fsm)
 	{
-		me->enemyFSM->SetRotToPlayer();
+		me->enemyFSM->Timeline.PlayFromStart();
 		me->enemyFSM->bIsAttackReady=false;
 	}
 }
