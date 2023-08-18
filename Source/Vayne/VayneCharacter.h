@@ -56,11 +56,21 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UParticleSystem* bulletImpactFactory;
 
+	UPROPERTY(EditAnywhere)
+	class UParticleSystem* fireFactory;
+
+	UPROPERTY(EditAnywhere)
+	class UParticleSystem* targetMarkFactory;
+
+	UPROPERTY(EditAnywhere)
+	class UParticleSystem* targetFireFactory;
+
 	UPROPERTY()
 	FTransform bulletImpactTrans;
 
 	UPROPERTY()
 	int32 enemyArrayNum;
+
 	
 
 

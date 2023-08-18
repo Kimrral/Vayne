@@ -38,6 +38,6 @@ void UEnemyAnim::AnimNotify_AttackEnd()
 
 void UEnemyAnim::AnimNotify_DamageEnd()
 {
-	me->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+	me->GetCharacterMovement()->MaxWalkSpeed=200.0f;
 }
 

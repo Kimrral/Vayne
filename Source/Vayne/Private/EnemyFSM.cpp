@@ -78,9 +78,9 @@ void UEnemyFSM::TickIdle()
 
 void UEnemyFSM::TickMove()
 {
-	FVector dir = player->GetActorLocation() - me->GetActorLocation();
+	FVector dir = player->GetActorLocation() - me->GetActorLocation();	
+	me->AddMovementInput(dir.GetSafeNormal());
 	SetRotToPlayer();
-	me->AddMovementInput(dir.GetSafeNormal());	
 	float dist = player->GetDistanceTo(me);
 	if(dist<=attackRange)
 	{
@@ -128,7 +128,7 @@ void UEnemyFSM::TickAttack()
 void UEnemyFSM::TickDamage()
 {
 	curTime+=GetWorld()->GetDeltaSeconds();
-	if(curTime>1)
+	if(curTime>1.5f)
 	{
 		SetState(EEnemyState::MOVE);
 		curTime=0;
