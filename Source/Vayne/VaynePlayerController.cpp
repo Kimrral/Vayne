@@ -10,6 +10,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "FrameTypes.h"
+#include "VayneGameMode.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -45,6 +46,8 @@ void AVaynePlayerController::BeginPlay()
 		TimelineProgress.BindDynamic(this, &AVaynePlayerController::SetPlayerRot);
 		Timeline.AddInterpFloat(CurveFloat, TimelineProgress);
 	}
+
+	gameMode=Cast<AVayneGameMode>(GetWorld()->GetAuthGameMode());
 	
 }
 
@@ -72,13 +75,6 @@ void AVaynePlayerController::SetPlayerRotNoLerp()
 	PlayerChar->SetActorRotation(FRotator(0, fireRot.Yaw, 0));
 }
 
-void AVaynePlayerController::SetPlayerRotToEnemy(FVector enemyLoc)
-{
-	FVector WorldDirection = (enemyLoc - PlayerChar->GetActorLocation());
-	auto fireRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, PlayerChar->GetActorUpVector());
-	PlayerChar->SetActorRotation(FRotator(0, fireRot.Yaw, 0));
-}
-
 void AVaynePlayerController::SetupInputComponent()
 {
 	// set up gameplay key bindings
@@ -102,6 +98,7 @@ void AVaynePlayerController::SetupInputComponent()
 
 		// Fire input events
 		EnhancedInputComponent->BindAction(IA_Fire, ETriggerEvent::Triggered, this, &AVaynePlayerController::OnFire);
+		EnhancedInputComponent->BindAction(IA_Fire, ETriggerEvent::Completed, this, &AVaynePlayerController::OnFireReleased);
 
 		// Cam Zoom input events
 		EnhancedInputComponent->BindAction(IA_CamZoom, ETriggerEvent::Triggered, this, &AVaynePlayerController::OnCamZoom);
@@ -204,23 +201,20 @@ void AVaynePlayerController::OnStop()
 
 void AVaynePlayerController::OnFire()
 {
-	FHitResult Hit;
-	bool bHitSuccessful = false;
-	bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1, true, Hit);
-	if (bHitSuccessful)
+	if(PlayerChar)
 	{
-		CachedDestination = Hit.Location;
-		if(PlayerChar)
+		PlayerChar->FireInput();
+	}
+	
+}
+
+void AVaynePlayerController::OnFireReleased()
+{
+	if(PlayerChar)
+	{
+		if(gameMode&&gameMode->isCursorOnEnemy)
 		{
-			PlayerChar->GetCharacterMovement()->DisableMovement();
-			StopMovement();
-			bool isMontagePlaying = PlayerChar->GetMesh()->GetAnimInstance()->IsAnyMontagePlaying();
-			if(!isMontagePlaying)
-			{
-				PlayerChar->FireInput();
-			}
-			FTimerHandle movementHandle;
-			GetWorldTimerManager().SetTimer(movementHandle, this, &AVaynePlayerController::MovementReenable, 0.2f, false);			
+			PlayerChar->FireInputReleased();
 		}
 	}
 }
@@ -241,6 +235,4 @@ void AVaynePlayerController::OnSpace()
 
 void AVaynePlayerController::MovementReenable()
 {
-	if(PlayerChar)
-	PlayerChar->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 }

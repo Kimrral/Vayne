@@ -19,6 +19,9 @@ public:
 	
 	UPROPERTY()
 	class AVayneCharacter* me;
+
+	UPROPERTY()
+	class AVaynePlayerController* playerController;
 	
 	UFUNCTION()
 	void AnimNotify_PlayerAttackStart();

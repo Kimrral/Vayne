@@ -32,6 +32,8 @@ public:
 	// Fire Function
 	UFUNCTION()
 	void FireInput();
+	UFUNCTION()
+	void FireInputReleased();
 
 	// Outline Function
 	UFUNCTION()
@@ -73,6 +75,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class UParticleSystem* targetFireFactory;
+	
+	UPROPERTY(EditAnywhere)
+	class UParticleSystem* bulletTrailFactory;
 
 	UPROPERTY()
 	FTransform bulletImpactTrans;
@@ -85,6 +90,28 @@ public:
 
 	UPROPERTY()
 	float isMovingToAttackRange=false;
+
+	UPROPERTY()
+	float attackDelay = 1.3f;
+
+	UPROPERTY()
+	FTimerHandle attackDelayHandle;
+
+	UPROPERTY()
+	float attackTimerSeconds = 0;
+
+	UPROPERTY()
+	FVector CachedEnemyLoc;
+
+	UPROPERTY()
+	float enemyDist;
+
+	UPROPERTY()
+	bool bIsNotAttackableRange;
+
+	UPROPERTY()
+	bool isAPressed;
+
 
 	
 

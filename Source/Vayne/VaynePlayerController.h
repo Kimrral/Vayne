@@ -84,9 +84,8 @@ public:
 	UFUNCTION()
 	void SetPlayerRotNoLerp();
 
-	UFUNCTION()
-	void SetPlayerRotToEnemy(FVector enemyLoc);
-
+	UPROPERTY()
+	class AVayneGameMode* gameMode;
 
 
 	
@@ -112,6 +111,7 @@ protected:
 	void OnAttackReleased();
 	void OnStop();
 	void OnFire();
+	void OnFireReleased();
 	void OnCamZoom();
 	void OnCamZoomOut();
 	void OnSpace();
@@ -123,7 +123,6 @@ private:
 
 	bool bIsTouch; // Is it a touch device
 	float FollowTime; // For how long it has been pressed
-
 };
 
 
