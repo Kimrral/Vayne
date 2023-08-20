@@ -72,6 +72,13 @@ void AVaynePlayerController::SetPlayerRotNoLerp()
 	PlayerChar->SetActorRotation(FRotator(0, fireRot.Yaw, 0));
 }
 
+void AVaynePlayerController::SetPlayerRotToEnemy(FVector enemyLoc)
+{
+	FVector WorldDirection = (enemyLoc - PlayerChar->GetActorLocation());
+	auto fireRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, PlayerChar->GetActorUpVector());
+	PlayerChar->SetActorRotation(FRotator(0, fireRot.Yaw, 0));
+}
+
 void AVaynePlayerController::SetupInputComponent()
 {
 	// set up gameplay key bindings
@@ -210,7 +217,6 @@ void AVaynePlayerController::OnFire()
 			bool isMontagePlaying = PlayerChar->GetMesh()->GetAnimInstance()->IsAnyMontagePlaying();
 			if(!isMontagePlaying)
 			{
-				SetPlayerRotNoLerp();
 				PlayerChar->FireInput();
 			}
 			FTimerHandle movementHandle;

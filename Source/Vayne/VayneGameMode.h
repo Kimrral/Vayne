@@ -13,6 +13,12 @@ class AVayneGameMode : public AGameModeBase
 
 public:
 	AVayneGameMode();
+
+	UPROPERTY()
+	bool isCursorOnEnemy = false;
+
+	UPROPERTY()
+	bool isCursorOnInteractibleActor = false;
 };
 
 

@@ -5,10 +5,9 @@
 
 #include "EnemyAnim.h"
 #include "EnemyFSM.h"
-#include "AI/NavigationSystemBase.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/KismetMathLibrary.h"
+#include "Vayne/VayneGameMode.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -26,7 +25,7 @@ AEnemy::AEnemy()
 	GetMesh()->OnEndCursorOver.AddDynamic(this, &AEnemy::CursorOverEnd);
 
 	// Set Walk Speed
-	GetCharacterMovement()->MaxWalkSpeed=200.f;
+	//GetCharacterMovement()->MaxWalkSpeed=200.f;
 
 	// Enemy Anim Blueprints
 	ConstructorHelpers::FClassFinder<UAnimInstance> tempAnim(TEXT("/Script/Engine.AnimBlueprint'/Game/Blueprints/ABP_Guardian.ABP_Guardian_C'"));
@@ -41,7 +40,9 @@ void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
-	enemyAnim = Cast<UEnemyAnim>(GetMesh()->GetAnimInstance());	
+	enemyAnim = Cast<UEnemyAnim>(GetMesh()->GetAnimInstance());
+	gameMode = Cast<AVayneGameMode>(GetWorld()->GetAuthGameMode());
+
 }
 
 // Called every frame
@@ -62,12 +63,14 @@ void AEnemy::CursorOver(UPrimitiveComponent* primComp)
 {
 	// Outline Render
 	GetMesh()->SetRenderCustomDepth(true);
+	gameMode->isCursorOnEnemy=true;
 }
 
 void AEnemy::CursorOverEnd(UPrimitiveComponent* primComp)
 {
 	// Outline Render
 	GetMesh()->SetRenderCustomDepth(false);
+	gameMode->isCursorOnEnemy=false;
 }
 
 void AEnemy::Move()

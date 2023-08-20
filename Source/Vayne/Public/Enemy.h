@@ -32,7 +32,8 @@ public:
 	UFUNCTION()
 	void CursorOverEnd(UPrimitiveComponent* primComp);
 
-
+	UPROPERTY()
+	class AVayneGameMode* gameMode;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=FSM)
 	class UEnemyFSM* enemyFSM;

@@ -84,6 +84,9 @@ public:
 	UFUNCTION()
 	void SetPlayerRotNoLerp();
 
+	UFUNCTION()
+	void SetPlayerRotToEnemy(FVector enemyLoc);
+
 
 
 	

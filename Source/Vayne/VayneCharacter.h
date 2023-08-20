@@ -39,8 +39,17 @@ public:
 	UFUNCTION()
 	void CursorOverEnd(UPrimitiveComponent* primComp);
 
+	UFUNCTION()
+	void StartTargetAttack(AEnemy* enemy);
+
 	UPROPERTY()
 	class AActor* hitActors;
+
+	UPROPERTY()
+	class AVayneGameMode* gameMode;
+
+	UPROPERTY()
+	class AVaynePlayerController* playerController;
 
 	/** Top down camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -70,6 +79,12 @@ public:
 
 	UPROPERTY()
 	int32 enemyArrayNum;
+
+	UPROPERTY(EditAnywhere, Category=Settings)
+	float attackRange = 400.0f;
+
+	UPROPERTY()
+	float isMovingToAttackRange=false;
 
 	
 
