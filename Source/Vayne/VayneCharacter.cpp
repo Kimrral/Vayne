@@ -184,7 +184,7 @@ void AVayneCharacter::FireInputReleased()
 {
 	if(isAPressed&&bIsNotAttackableRange)
 	{
-		UAIBlueprintHelperLibrary::SimpleMoveToLocation(playerController, CachedEnemyLoc);
+		//UAIBlueprintHelperLibrary::SimpleMoveToLocation(playerController, CachedEnemyLoc);
 	}
 }
 
@@ -206,7 +206,6 @@ void AVayneCharacter::StartTargetAttack(AEnemy* enemy)
 		FVector WorldDirection = (CachedEnemyLoc - this->GetActorLocation());
 		auto charRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
 		this->SetActorRotation(FRotator(0, charRot.Yaw, 0));
-		PlayAnimMontage(FireMontage, 1);
 		FVector startLoc = GetMesh()->GetSocketLocation(FName("SMG_Barrel"));
 		FRotator fireRot = GetMesh()->GetSocketRotation("SMG_Barrel");
 		auto emitterLoc = enemy->GetMesh()->GetSocketLocation(FName("HitEffectSocket"));
@@ -214,6 +213,7 @@ void AVayneCharacter::StartTargetAttack(AEnemy* enemy)
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), fireFactory,startLoc, fireRot, FVector(1, 1, 1));
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory,startLoc, fireRot, FVector(1, 1, 1));
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,emitterLoc, emitterRot, FVector(2, 2, 2));		
+		PlayAnimMontage(FireMontage, 1);
 		fsm->OnDamageProcess(30);
 		enemy->OnDamaged();
 	}

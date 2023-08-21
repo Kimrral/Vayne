@@ -203,6 +203,7 @@ void AVaynePlayerController::OnFire()
 {
 	if(PlayerChar)
 	{
+		Timeline.Stop();
 		PlayerChar->FireInput();
 	}
 	

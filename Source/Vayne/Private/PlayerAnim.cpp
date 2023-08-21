@@ -19,7 +19,8 @@ void UPlayerAnim::NativeBeginPlay()
 void UPlayerAnim::AnimNotify_PlayerAttackStart()
 {
 	playerController->DisableInput(playerController);
-	me->GetCharacterMovement()->DisableMovement();
+	playerController->StopMovement();
+	//me->GetCharacterMovement()->DisableMovement();
 	me->GetCharacterMovement()->MaxWalkSpeed=0;
 	UE_LOG(LogTemp, Warning, TEXT("Animstart"))
 }
@@ -27,7 +28,7 @@ void UPlayerAnim::AnimNotify_PlayerAttackStart()
 void UPlayerAnim::AnimNotify_PlayerAttackEnd()
 {
 	me->GetController()->StopMovement();
-	me->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+	//me->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	me->GetCharacterMovement()->MaxWalkSpeed=380.f;
 	playerController->EnableInput(playerController);
 	UE_LOG(LogTemp, Warning, TEXT("Animend"))

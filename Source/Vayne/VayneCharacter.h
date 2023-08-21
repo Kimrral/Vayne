@@ -86,7 +86,7 @@ public:
 	int32 enemyArrayNum;
 
 	UPROPERTY(EditAnywhere, Category=Settings)
-	float attackRange = 400.0f;
+	float attackRange = 550.0f;
 
 	UPROPERTY()
 	float isMovingToAttackRange=false;
