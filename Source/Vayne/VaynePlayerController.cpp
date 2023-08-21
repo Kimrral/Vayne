@@ -105,7 +105,7 @@ void AVaynePlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(IA_CamZoomOut, ETriggerEvent::Triggered, this, &AVaynePlayerController::OnCamZoomOut);
 
 		// Space input events
-		EnhancedInputComponent->BindAction(IA_Space, ETriggerEvent::Triggered, this, &AVaynePlayerController::OnSpace);
+		EnhancedInputComponent->BindAction(IA_Space, ETriggerEvent::Started, this, &AVaynePlayerController::OnSpace);
 
 		
 		// Setup touch input events
@@ -253,6 +253,7 @@ void AVaynePlayerController::OnCamZoomOut()
 
 void AVaynePlayerController::OnSpace()
 {
+	PlayerChar->SpaceInput();
 }
 
 void AVaynePlayerController::SetAttackModeDisable()

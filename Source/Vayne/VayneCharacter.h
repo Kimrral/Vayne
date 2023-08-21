@@ -38,6 +38,10 @@ public:
 	UFUNCTION()
 	void FireInputReleased();
 
+	// Space Bar Function
+	UFUNCTION()
+	void SpaceInput();
+
 	// Outline Function
 	UFUNCTION()
 	void CursorOver(UPrimitiveComponent* primComp);

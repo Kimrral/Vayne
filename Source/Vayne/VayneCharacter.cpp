@@ -59,7 +59,7 @@ AVayneCharacter::AVayneCharacter()
 	AttackCirclePlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AttackCirclePlane"));
 	AttackCirclePlane->SetupAttachment(RootComponent);
 	AttackCirclePlane->SetVisibility(false);
-	AttackCirclePlane->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	AttackCirclePlane->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	AttackCirclePlane->SetGenerateOverlapEvents(true);
 
 	// Activate ticking in order to update the cursor every frame.
@@ -126,7 +126,6 @@ void AVayneCharacter::FireInput()
 						else
 						{
 							bIsNotAttackableRange=true;
-							//playerController->StopMovement();
 							auto targetLoc = (enemy->GetActorLocation()-this->GetActorLocation()).GetSafeNormal();
 							UEnemyFSM* fsm = Cast<UEnemyFSM>(enemy->GetDefaultSubobjectByName(FName("enemyFSM")));
 							if(fsm)
@@ -173,6 +172,10 @@ void AVayneCharacter::FireInputReleased()
 	}
 }
 
+void AVayneCharacter::SpaceInput()
+{
+}
+
 void AVayneCharacter::CursorOver(UPrimitiveComponent* primComp)
 {
 	//GetMesh()->SetRenderCustomDepth(true);
@@ -185,6 +188,7 @@ void AVayneCharacter::CursorOverEnd(UPrimitiveComponent* primComp)
 
 void AVayneCharacter::OffAttackMode()
 {
+	bAttackMode=false;
 }
 
 void AVayneCharacter::StartTargetAttack(AEnemy* enemy)
@@ -214,8 +218,26 @@ void AVayneCharacter::StartTargetAttack(AEnemy* enemy)
 
 void AVayneCharacter::OnOverlapEnemy(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	TArray<FHitResult> hits;
+	if(SweepResult.GetNumOverlapHits(hits)>1)
+	{
+		FVector Center = AttackCirclePlane->GetComponentLocation();
+		int32 Closest = 0;
+		for(int i=0; i<hits.Num(); ++i)
+		{
+			float ClosestDist = FVector::Dist(hits[Closest].GetActor()->GetActorLocation(), Center);
+			float NextDist = FVector::Dist(hits[i].GetActor()->GetActorLocation(), Center);
+
+			if (NextDist < ClosestDist)
+			{
+				Closest = i;
+			}
+		}
+		OtherActor=hits[Closest].GetActor();
+	}
+	bool isMontagePlaying = GetMesh()->GetAnimInstance()->IsAnyMontagePlaying();
 	AEnemy* enemy = Cast<AEnemy>(OtherActor);
-	if(enemy&&bAttackMode)
+	if(enemy&&bAttackMode&&!isMontagePlaying)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("enemy casted"))
 		StartTargetAttack(enemy);
