@@ -45,7 +45,16 @@ public:
 	void CursorOverEnd(UPrimitiveComponent* primComp);
 
 	UFUNCTION()
+	void OffAttackMode();
+
+	UFUNCTION()
 	void StartTargetAttack(AEnemy* enemy);
+
+	UFUNCTION()
+	void OnOverlapEnemy(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
+	UFUNCTION()
+	void EndOverlapEnemy(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	UPROPERTY()
 	class AActor* hitActors;
@@ -88,6 +97,9 @@ public:
 	UPROPERTY()
 	int32 enemyArrayNum;
 
+	UPROPERTY()
+	FTimerHandle attackModeHandle;
+
 	UPROPERTY(EditAnywhere, Category=Settings)
 	float attackRange = 550.0f;
 
@@ -115,6 +127,8 @@ public:
 	UPROPERTY()
 	bool isAPressed;
 
+	UPROPERTY()
+	bool bAttackMode = false;
 
 	
 

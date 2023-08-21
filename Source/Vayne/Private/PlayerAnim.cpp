@@ -22,7 +22,7 @@ void UPlayerAnim::AnimNotify_PlayerAttackStart()
 	//me->GetMesh()->BodyInstance.CreateDOFLock();
 	playerController->StopMovement();
 	me->GetCharacterMovement()->Deactivate();
-	UE_LOG(LogTemp, Warning, TEXT("Animstart"))
+	//UE_LOG(LogTemp, Warning, TEXT("Animstart"))
 }
 
 void UPlayerAnim::AnimNotify_PlayerAttackEnd()
@@ -30,7 +30,7 @@ void UPlayerAnim::AnimNotify_PlayerAttackEnd()
 	me->GetCharacterMovement()->Activate();
 	//me->GetMesh()->BodyInstance.bLockRotation = false;
 	//me->GetMesh()->BodyInstance.SetDOFLock(EDOFMode::None);
-	UE_LOG(LogTemp, Warning, TEXT("Animend"))
+	//UE_LOG(LogTemp, Warning, TEXT("Animend"))
 
 
 }

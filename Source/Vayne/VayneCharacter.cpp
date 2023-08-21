@@ -59,7 +59,8 @@ AVayneCharacter::AVayneCharacter()
 	AttackCirclePlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AttackCirclePlane"));
 	AttackCirclePlane->SetupAttachment(RootComponent);
 	AttackCirclePlane->SetVisibility(false);
-	AttackCirclePlane->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	AttackCirclePlane->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	AttackCirclePlane->SetGenerateOverlapEvents(true);
 
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
@@ -82,6 +83,9 @@ void AVayneCharacter::BeginPlay()
 	gameMode = Cast<AVayneGameMode>(GetWorld()->GetAuthGameMode());
 	playerController = Cast<AVaynePlayerController>(GetWorld()->GetFirstPlayerController());
 
+	AttackCirclePlane->OnComponentBeginOverlap.AddDynamic(this, &AVayneCharacter::OnOverlapEnemy);
+	AttackCirclePlane->OnComponentEndOverlap.AddDynamic(this, &AVayneCharacter::EndOverlapEnemy);
+
 }
 
 void AVayneCharacter::FireInput()
@@ -92,6 +96,9 @@ void AVayneCharacter::FireInput()
 		// if Cursor is on Enemy
 		if(gameMode->isCursorOnEnemy==true)
 		{
+			bAttackMode = true;
+			GetWorldTimerManager().ClearTimer(attackDelayHandle);
+			GetWorldTimerManager().ClearTimer(attackModeHandle);
 			FHitResult Hit;
 			bool bHitSuccessful = playerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
 			if (bHitSuccessful)
@@ -176,6 +183,10 @@ void AVayneCharacter::CursorOverEnd(UPrimitiveComponent* primComp)
 	//GetMesh()->SetRenderCustomDepth(false);
 }
 
+void AVayneCharacter::OffAttackMode()
+{
+}
+
 void AVayneCharacter::StartTargetAttack(AEnemy* enemy)
 {
 	UEnemyFSM* fsm = Cast<UEnemyFSM>(enemy->GetDefaultSubobjectByName(FName("enemyFSM")));
@@ -193,10 +204,33 @@ void AVayneCharacter::StartTargetAttack(AEnemy* enemy)
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, fireRot, FVector(0.3, 0.1, 0.1));
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,emitterLoc, emitterRot, FVector(2, 2, 2));		
 		PlayAnimMontage(FireMontage, 1);
-		fsm->OnDamageProcess(10);
+		fsm->OnDamageProcess(20);
 		enemy->OnDamaged();
 		AttackCircle->SetVisibility(false);
 		AttackCirclePlane->SetVisibility(false);
+		GetWorldTimerManager().SetTimer(attackModeHandle, this, &AVayneCharacter::OffAttackMode, 3.0, false);
+	}
+}
+
+void AVayneCharacter::OnOverlapEnemy(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	AEnemy* enemy = Cast<AEnemy>(OtherActor);
+	if(enemy&&bAttackMode)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("enemy casted"))
+		StartTargetAttack(enemy);
+		FTimerDelegate attackDelegate = FTimerDelegate::CreateUObject( this, &AVayneCharacter::StartTargetAttack, enemy);
+		GetWorldTimerManager().SetTimer(attackDelayHandle, attackDelegate, attackDelay, true);
+	}
+}
+
+void AVayneCharacter::EndOverlapEnemy(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	bAttackMode=false;
+	AEnemy* enemy = Cast<AEnemy>(OtherActor);
+	if(enemy&&bAttackMode)
+	{
+		GetWorldTimerManager().ClearTimer(attackDelayHandle);
 	}
 }
 
