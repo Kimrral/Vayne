@@ -28,6 +28,7 @@ void UPlayerAnim::AnimNotify_PlayerAttackStart()
 
 void UPlayerAnim::AnimNotify_PlayerAttackEnd()
 {
+	playerController->StopMovement();
 	me->GetCharacterMovement()->Activate();
 	me->AttackCirclePlane->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	//me->GetMesh()->BodyInstance.bLockRotation = false;
