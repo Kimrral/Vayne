@@ -29,6 +29,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* AttackCircle;
 
+	UPROPERTY(EditAnywhere)
+	class UStaticMeshComponent* AttackCirclePlane;
+
 	// Fire Function
 	UFUNCTION()
 	void FireInput();
@@ -72,12 +75,12 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class UParticleSystem* targetMarkFactory;
-
-	UPROPERTY(EditAnywhere)
-	class UParticleSystem* targetFireFactory;
 	
 	UPROPERTY(EditAnywhere)
 	class UParticleSystem* bulletTrailFactory;
+
+	UPROPERTY(EditAnywhere)
+	class UParticleSystem* bulletTrailFactory2;
 
 	UPROPERTY()
 	FTransform bulletImpactTrans;
@@ -91,8 +94,8 @@ public:
 	UPROPERTY()
 	float isMovingToAttackRange=false;
 
-	UPROPERTY()
-	float attackDelay = 1.3f;
+	UPROPERTY(EditAnywhere, Category=Settings)
+	float attackDelay = 0.6f;
 
 	UPROPERTY()
 	FTimerHandle attackDelayHandle;

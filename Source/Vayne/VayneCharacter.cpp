@@ -54,6 +54,12 @@ AVayneCharacter::AVayneCharacter()
 	AttackCircle->SetupAttachment(RootComponent);
 	AttackCircle->SetVisibility(false);
 	AttackCircle->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
+	// Attack Circle Particle
+	AttackCirclePlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AttackCirclePlane"));
+	AttackCirclePlane->SetupAttachment(RootComponent);
+	AttackCirclePlane->SetVisibility(false);
+	AttackCirclePlane->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
@@ -80,7 +86,6 @@ void AVayneCharacter::BeginPlay()
 
 void AVayneCharacter::FireInput()
 {
-	isAPressed = AttackCircle->IsVisible();
 	// if A Pressed
 	if(isAPressed)
 	{
@@ -105,7 +110,9 @@ void AVayneCharacter::FireInput()
 							bool isMontagePlaying = GetMesh()->GetAnimInstance()->IsAnyMontagePlaying();
 							if(!isMontagePlaying)
 							{
-								StartTargetAttack(enemy);												
+								StartTargetAttack(enemy);
+								FTimerDelegate attackDelegate = FTimerDelegate::CreateUObject( this, &AVayneCharacter::StartTargetAttack, enemy);
+								GetWorldTimerManager().SetTimer(attackDelayHandle, attackDelegate, attackDelay, true);
 							}
 						}
 						// if not attackable Range
@@ -122,6 +129,7 @@ void AVayneCharacter::FireInput()
 								SetActorRotation(FRotator(0, charRot.Yaw, 0));	
 							}							
 							AddMovementInput(targetLoc, 1, false);
+							UAIBlueprintHelperLibrary::SimpleMoveToLocation(playerController, CachedEnemyLoc);
 						}
 					}
 				}				
@@ -130,61 +138,31 @@ void AVayneCharacter::FireInput()
 		// if Cursor is not on Enemy
 		else
 		{
-			
+			//playerController->OnSetDestinationTriggered();
 		}
 	}
 	// if A is not Pressed
 	else
 	{
-		/*bool isMontagePlaying = GetMesh()->GetAnimInstance()->IsAnyMontagePlaying();
-		if(!isMontagePlaying)
-		{
-			PlayAnimMontage(FireMontage, 1);
-			playerController->SetPlayerRotNoLerp();
-			TArray<FHitResult> hits;
-			FVector startLoc = GetMesh()->GetSocketLocation(FName("SMG_Barrel"));
-			FVector endLoc = startLoc + GetActorForwardVector()*750.0f;
-			FRotator fireRot = GetMesh()->GetSocketRotation("SMG_Barrel");
-			//DrawDebugLine(GetWorld(), startLoc, endLoc, FColor::Red, false, 2.0f);
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), fireFactory,startLoc, fireRot, FVector(1, 1, 1));
-			bool bHit = GetWorld()->LineTraceMultiByChannel(hits, startLoc, endLoc, ECC_Pawn);
-			if(bHit)
-			{
-				for(int i=0; i<hits.Num(); ++i)
-				{
-					hitActors = hits[i].GetActor();
-					enemyArrayNum=i;
-				}		
-				if(hitActors)
-				{
-					AEnemy* enemy = Cast<AEnemy>(hitActors);
-					if(enemy)
-					{
-						auto emitterLoc = enemy->GetMesh()->GetSocketLocation(FName("HitEffectSocket"));
-						auto emitterRot = enemy->GetMesh()->GetSocketRotation(FName("HitEffectSocket"));
-						FTransform targetTrans(hits[enemyArrayNum].ImpactPoint);
-						FVector targetLoc = targetTrans.GetLocation();
-						FRotator targetRot = targetTrans.Rotator();
-						UEnemyFSM* fsm = Cast<UEnemyFSM>(enemy->GetDefaultSubobjectByName(FName("enemyFSM")));
-						if(fsm)
-						{
-							UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,emitterLoc, emitterRot, FVector(2, 2, 2));
-							//UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), targetMarkFactory, targetLoc, GetActorRotation()+FRotator(0, -90, 0), FVector(4));
-							fsm->OnDamageProcess(30);
-							enemy->OnDamaged();
-						}
-					}
-				}
-			}
-		}*/
+
 	}
 }
 
 void AVayneCharacter::FireInputReleased()
 {
-	if(isAPressed&&bIsNotAttackableRange)
+	if(isAPressed)
 	{
-		//UAIBlueprintHelperLibrary::SimpleMoveToLocation(playerController, CachedEnemyLoc);
+		if(gameMode->isCursorOnEnemy)
+		{
+			if(bIsNotAttackableRange)
+			{
+				UAIBlueprintHelperLibrary::SimpleMoveToLocation(playerController, CachedEnemyLoc);
+			}
+		}
+		else
+		{
+			playerController->OnSetDestinationReleased();
+		}
 	}
 }
 
@@ -201,7 +179,7 @@ void AVayneCharacter::CursorOverEnd(UPrimitiveComponent* primComp)
 void AVayneCharacter::StartTargetAttack(AEnemy* enemy)
 {
 	UEnemyFSM* fsm = Cast<UEnemyFSM>(enemy->GetDefaultSubobjectByName(FName("enemyFSM")));
-	if(fsm)
+	if(fsm&&fsm->curHP>0)
 	{		
 		FVector WorldDirection = (CachedEnemyLoc - this->GetActorLocation());
 		auto charRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
@@ -211,11 +189,14 @@ void AVayneCharacter::StartTargetAttack(AEnemy* enemy)
 		auto emitterLoc = enemy->GetMesh()->GetSocketLocation(FName("HitEffectSocket"));
 		auto emitterRot = enemy->GetMesh()->GetSocketRotation(FName("HitEffectSocket"));
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), fireFactory,startLoc, fireRot, FVector(1, 1, 1));
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory,startLoc, fireRot, FVector(1, 1, 1));
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory,startLoc, fireRot, FVector(0.5));
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, fireRot, FVector(0.3, 0.1, 0.1));
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,emitterLoc, emitterRot, FVector(2, 2, 2));		
 		PlayAnimMontage(FireMontage, 1);
-		fsm->OnDamageProcess(30);
+		fsm->OnDamageProcess(10);
 		enemy->OnDamaged();
+		AttackCircle->SetVisibility(false);
+		AttackCirclePlane->SetVisibility(false);
 	}
 }
 

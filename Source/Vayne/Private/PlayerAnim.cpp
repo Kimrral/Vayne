@@ -18,19 +18,18 @@ void UPlayerAnim::NativeBeginPlay()
 
 void UPlayerAnim::AnimNotify_PlayerAttackStart()
 {
-	playerController->DisableInput(playerController);
+	//me->GetMesh()->BodyInstance.bLockRotation = true;
+	//me->GetMesh()->BodyInstance.CreateDOFLock();
 	playerController->StopMovement();
-	//me->GetCharacterMovement()->DisableMovement();
-	me->GetCharacterMovement()->MaxWalkSpeed=0;
+	me->GetCharacterMovement()->Deactivate();
 	UE_LOG(LogTemp, Warning, TEXT("Animstart"))
 }
 
 void UPlayerAnim::AnimNotify_PlayerAttackEnd()
 {
-	me->GetController()->StopMovement();
-	//me->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-	me->GetCharacterMovement()->MaxWalkSpeed=380.f;
-	playerController->EnableInput(playerController);
+	me->GetCharacterMovement()->Activate();
+	//me->GetMesh()->BodyInstance.bLockRotation = false;
+	//me->GetMesh()->BodyInstance.SetDOFLock(EDOFMode::None);
 	UE_LOG(LogTemp, Warning, TEXT("Animend"))
 
 

@@ -97,7 +97,7 @@ void AVaynePlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(IA_Stop, ETriggerEvent::Triggered, this, &AVaynePlayerController::OnStop);
 
 		// Fire input events
-		EnhancedInputComponent->BindAction(IA_Fire, ETriggerEvent::Triggered, this, &AVaynePlayerController::OnFire);
+		EnhancedInputComponent->BindAction(IA_Fire, ETriggerEvent::Started, this, &AVaynePlayerController::OnFire);
 		EnhancedInputComponent->BindAction(IA_Fire, ETriggerEvent::Completed, this, &AVaynePlayerController::OnFireReleased);
 
 		// Cam Zoom input events
@@ -126,6 +126,9 @@ void AVaynePlayerController::OnSetDestinationTriggered()
 {
 	// We flag that the input is being pressed
 	FollowTime += GetWorld()->GetDeltaSeconds();
+
+	Timeline.Stop();
+	GetWorldTimerManager().ClearTimer(PlayerChar->attackDelayHandle);
 	
 	// We look for the location in the world where the player has pressed the input
 	FHitResult Hit;
@@ -185,13 +188,20 @@ void AVaynePlayerController::OnTouchReleased()
 void AVaynePlayerController::OnAttack()
 {
 	if(PlayerChar)
-	PlayerChar->AttackCircle->SetVisibility(true);
+	{
+		GetWorldTimerManager().ClearTimer(attackEnableHandle);
+		PlayerChar->AttackCircle->SetVisibility(true);
+		PlayerChar->AttackCirclePlane->SetVisibility(true);
+		PlayerChar->isAPressed=true;
+		GetWorldTimerManager().SetTimer(attackEnableHandle, this, &AVaynePlayerController::SetAttackModeDisable, 1.0f, false);		
+	}
 }
 
 void AVaynePlayerController::OnAttackReleased()
 {
 	if(PlayerChar)
 	PlayerChar->AttackCircle->SetVisibility(false);
+	PlayerChar->AttackCirclePlane->SetVisibility(false);
 }
 
 void AVaynePlayerController::OnStop()
@@ -203,7 +213,18 @@ void AVaynePlayerController::OnFire()
 {
 	if(PlayerChar)
 	{
-		Timeline.Stop();
+		if(gameMode->isCursorOnEnemy==false)
+		{
+			FHitResult Hit;
+			bool bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1, true, Hit);
+			// If we hit a surface, cache the location
+			if (bHitSuccessful)
+			{
+				CachedDestination = Hit.Location;
+			}
+			//UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursorRed, CachedDestination, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
+		}
+		Timeline.Stop();		
 		PlayerChar->FireInput();
 	}
 	
@@ -232,6 +253,11 @@ void AVaynePlayerController::OnCamZoomOut()
 
 void AVaynePlayerController::OnSpace()
 {
+}
+
+void AVaynePlayerController::SetAttackModeDisable()
+{
+	PlayerChar->isAPressed=false;
 }
 
 void AVaynePlayerController::MovementReenable()

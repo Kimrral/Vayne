@@ -82,10 +82,10 @@ void AEnemy::Move()
 void AEnemy::OnDie()
 {
 	FTimerHandle destroyHandle;
-	GetController()->StopMovement();
-	GetCharacterMovement()->DisableMovement();
+	GetCharacterMovement()->Deactivate();
 	StopAnimMontage();
 	auto capsule = GetCapsuleComponent();
+	//SetActorEnableCollision(false);
 	capsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetWorldTimerManager().SetTimer(destroyHandle, this, &AEnemy::OnDestroy, 10.0f, false);
@@ -94,7 +94,7 @@ void AEnemy::OnDie()
 void AEnemy::OnDamaged()
 {
 	GetController()->StopMovement();
-	GetCharacterMovement()->MaxWalkSpeed = 0;
+	GetCharacterMovement()->Deactivate();
 	PlayAnimMontage(damageMontage, 1);
 }
 

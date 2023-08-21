@@ -28,6 +28,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UNiagaraSystem* FXCursor;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UNiagaraSystem* FXCursorRed;
+
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputMappingContext* DefaultMappingContext;
@@ -87,10 +90,9 @@ public:
 	UPROPERTY()
 	class AVayneGameMode* gameMode;
 
-
+	UPROPERTY()
+	FTimerHandle attackEnableHandle;
 	
-
-protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
 	uint32 bMoveToMouseCursor : 1;
 
@@ -115,6 +117,7 @@ protected:
 	void OnCamZoom();
 	void OnCamZoomOut();
 	void OnSpace();
+	void SetAttackModeDisable();
 
 private:
 

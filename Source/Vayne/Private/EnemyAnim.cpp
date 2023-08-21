@@ -33,11 +33,12 @@ void UEnemyAnim::AnimNotify_AttackEnd()
 	UEnemyFSM* fsm = Cast<UEnemyFSM>(me->GetDefaultSubobjectByName(FName("enemyFSM")));
 	if(fsm)
 	{
+		me->enemyFSM->Timeline.Stop();
 	}
 }
 
 void UEnemyAnim::AnimNotify_DamageEnd()
 {
-	me->GetCharacterMovement()->MaxWalkSpeed=200.0f;
+	me->GetCharacterMovement()->Activate();
 }
 
