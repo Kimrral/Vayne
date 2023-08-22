@@ -175,6 +175,24 @@ void AVayneCharacter::FireInputReleased()
 
 void AVayneCharacter::SpaceInput()
 {
+	StopAnimMontage();
+	playerController->Timeline.Stop();
+	AttackCirclePlane->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	GetCharacterMovement()->StopActiveMovement();
+	GetWorldTimerManager().ClearTimer(attackDelayHandle);
+	GetWorldTimerManager().ClearTimer(burstHandle);
+	GetWorldTimerManager().ClearTimer(burstHandle2nd);
+	FHitResult Hit;
+	bool bHitSuccessful = playerController->GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1, true, Hit);
+	if (bHitSuccessful)
+	{
+		dashCursorLoc=Hit.Location;
+	}
+	FVector WorldDirection = (dashCursorLoc - this->GetActorLocation());
+	auto fireRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
+	this->SetActorRotation(FRotator(0, fireRot.Yaw, 0));
+	PlayAnimMontage(DashMontage, 1);
+	
 }
 
 void AVayneCharacter::CursorOver(UPrimitiveComponent* primComp)
@@ -223,7 +241,7 @@ void AVayneCharacter::StartTargetAttack(AEnemy* enemy)
 			FTimerDelegate secondAttackDelegate = FTimerDelegate::CreateUObject( this, &AVayneCharacter::SecondTargetAttack, enemy);
 			GetWorldTimerManager().SetTimer(burstHandle, secondAttackDelegate, 0.1f, false);
 			FTimerDelegate thirdAttackDelegate = FTimerDelegate::CreateUObject( this, &AVayneCharacter::ThirdTargetAttack, enemy);
-			GetWorldTimerManager().SetTimer(burstHanndle2nd, thirdAttackDelegate, 0.2f, false);
+			GetWorldTimerManager().SetTimer(burstHandle2nd, thirdAttackDelegate, 0.2f, false);
 			GetWorldTimerManager().SetTimer(attackModeHandle, this, &AVayneCharacter::OffAttackMode, 3.0, false);
 		}
 		else

@@ -28,5 +28,11 @@ public:
 
 	UFUNCTION()
 	void AnimNotify_PlayerAttackEnd();
+
+	UFUNCTION()
+	void AnimNotify_DashStart();
+	
+	UFUNCTION()
+	void AnimNotify_DashEnd();
 	
 };

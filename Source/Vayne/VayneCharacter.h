@@ -85,6 +85,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category=Montage)
 	class UAnimMontage* FireMontage;
+
+	UPROPERTY(EditAnywhere, Category=Montage)
+	class UAnimMontage* DashMontage;
 	
 	UPROPERTY(EditAnywhere)
 	class UParticleSystem* bulletImpactFactory;
@@ -144,10 +147,15 @@ public:
 	FTimerHandle burstHandle;
 
 	UPROPERTY()
-	FTimerHandle burstHanndle2nd;
+	FTimerHandle burstHandle2nd;
 
 	UPROPERTY()
 	class AEnemy* enemyRef;
+
+	UPROPERTY()
+	FVector dashCursorLoc;
+
+	
 	
 
 
