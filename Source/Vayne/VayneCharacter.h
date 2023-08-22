@@ -55,6 +55,12 @@ public:
 	void StartTargetAttack(AEnemy* enemy);
 
 	UFUNCTION()
+	void SecondTargetAttack(AEnemy* enemy);
+
+	UFUNCTION()
+	void ThirdTargetAttack(AEnemy* enemy);
+
+	UFUNCTION()
 	void OnOverlapEnemy(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
 	UFUNCTION()
@@ -111,7 +117,7 @@ public:
 	float isMovingToAttackRange=false;
 
 	UPROPERTY(EditAnywhere, Category=Settings)
-	float attackDelay = 0.6f;
+	float attackDelay = 0.8f;
 
 	UPROPERTY()
 	FTimerHandle attackDelayHandle;
@@ -133,6 +139,12 @@ public:
 
 	UPROPERTY()
 	bool bAttackMode = false;
+
+	UPROPERTY()
+	FTimerHandle burstHandle;
+
+	UPROPERTY()
+	FTimerHandle burstHanndle2nd;
 
 	
 

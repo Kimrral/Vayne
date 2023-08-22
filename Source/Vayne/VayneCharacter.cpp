@@ -194,26 +194,100 @@ void AVayneCharacter::OffAttackMode()
 void AVayneCharacter::StartTargetAttack(AEnemy* enemy)
 {
 	UEnemyFSM* fsm = Cast<UEnemyFSM>(enemy->GetDefaultSubobjectByName(FName("enemyFSM")));
-	if(fsm&&fsm->curHP>0)
-	{		
-		FVector WorldDirection = (CachedEnemyLoc - this->GetActorLocation());
-		auto charRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
-		this->SetActorRotation(FRotator(0, charRot.Yaw, 0));
-		FVector startLoc = GetMesh()->GetSocketLocation(FName("SMG_Barrel"));
-		FRotator fireRot = GetMesh()->GetSocketRotation("SMG_Barrel");
-		auto emitterLoc = enemy->GetMesh()->GetSocketLocation(FName("HitEffectSocket"));
-		auto emitterRot = enemy->GetMesh()->GetSocketRotation(FName("HitEffectSocket"));
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), fireFactory,startLoc, fireRot, FVector(1, 1, 1));
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory,startLoc, fireRot, FVector(0.5));
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, fireRot, FVector(0.3, 0.1, 0.1));
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,emitterLoc, emitterRot, FVector(2, 2, 2));		
-		PlayAnimMontage(FireMontage, 1);
-		fsm->OnDamageProcess(20);
-		enemy->OnDamaged();
-		AttackCircle->SetVisibility(false);
-		AttackCirclePlane->SetVisibility(false);
-		GetWorldTimerManager().SetTimer(attackModeHandle, this, &AVayneCharacter::OffAttackMode, 3.0, false);
+	if(fsm)
+	{
+		if(fsm->curHP>0)
+		{
+			FVector WorldDirection = (CachedEnemyLoc - this->GetActorLocation());
+			auto charRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
+			this->SetActorRotation(FRotator(0, charRot.Yaw, 0));
+			FVector startLoc = GetMesh()->GetSocketLocation(FName("SMG_Barrel"));
+			FRotator fireRot = GetMesh()->GetSocketRotation("SMG_Barrel");
+			auto emitterLoc = enemy->GetMesh()->GetSocketLocation(FName("HitEffectSocket"));
+			auto emitterRot = enemy->GetMesh()->GetSocketRotation(FName("HitEffectSocket"));
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), fireFactory,startLoc, fireRot, FVector(1, 1, 1));
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory,startLoc, fireRot, FVector(0.5));
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, fireRot, FVector(0.3, 0.1, 0.1));
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,emitterLoc, emitterRot, FVector(2, 2, 2));		
+			PlayAnimMontage(FireMontage, 1);
+			fsm->OnDamageProcess(10);
+			enemy->OnDamaged();
+			AttackCircle->SetVisibility(false);
+			AttackCirclePlane->SetVisibility(false);
+			FTimerDelegate secondAttackDelegate = FTimerDelegate::CreateUObject( this, &AVayneCharacter::SecondTargetAttack, enemy);
+			GetWorldTimerManager().SetTimer(burstHandle, secondAttackDelegate, 0.1f, false);
+			FTimerDelegate thirdAttackDelegate = FTimerDelegate::CreateUObject( this, &AVayneCharacter::ThirdTargetAttack, enemy);
+			GetWorldTimerManager().SetTimer(burstHanndle2nd, thirdAttackDelegate, 0.2f, false);
+			GetWorldTimerManager().SetTimer(attackModeHandle, this, &AVayneCharacter::OffAttackMode, 3.0, false);
+		}
+		else
+		{
+			GetCharacterMovement()->StopActiveMovement();
+			GetCharacterMovement()->Activate();
+		}
 	}
+}
+
+void AVayneCharacter::SecondTargetAttack(AEnemy* enemy)
+{
+	StopAnimMontage(FireMontage);
+	UEnemyFSM* fsm = Cast<UEnemyFSM>(enemy->GetDefaultSubobjectByName(FName("enemyFSM")));
+	if(fsm)
+	{
+		if(fsm->curHP>0)
+		{
+			FVector WorldDirection = (CachedEnemyLoc - this->GetActorLocation());
+			auto charRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
+			this->SetActorRotation(FRotator(0, charRot.Yaw, 0));
+			FVector startLoc = GetMesh()->GetSocketLocation(FName("SMG_Barrel"));
+			FRotator fireRot = GetMesh()->GetSocketRotation("SMG_Barrel");
+			auto emitterLoc = enemy->GetMesh()->GetSocketLocation(FName("HitEffectSocket"));
+			auto emitterRot = enemy->GetMesh()->GetSocketRotation(FName("HitEffectSocket"));
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), fireFactory,startLoc, fireRot, FVector(1, 1, 1));
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory,startLoc, fireRot, FVector(0.5));
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, fireRot, FVector(0.3, 0.1, 0.1));
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,emitterLoc, emitterRot, FVector(2, 2, 2));		
+			PlayAnimMontage(FireMontage, 1);
+			fsm->OnDamageProcess(10);
+			enemy->OnDamaged();
+		}
+		else
+		{
+			GetCharacterMovement()->StopActiveMovement();
+			GetCharacterMovement()->Activate();
+		}
+	}
+}
+
+void AVayneCharacter::ThirdTargetAttack(AEnemy* enemy)
+{
+	StopAnimMontage(FireMontage);
+	UEnemyFSM* fsm = Cast<UEnemyFSM>(enemy->GetDefaultSubobjectByName(FName("enemyFSM")));
+		if(fsm)
+		{
+			if(fsm->curHP>0)
+			{
+				FVector WorldDirection = (CachedEnemyLoc - this->GetActorLocation());
+				auto charRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
+				this->SetActorRotation(FRotator(0, charRot.Yaw, 0));
+				FVector startLoc = GetMesh()->GetSocketLocation(FName("SMG_Barrel"));
+				FRotator fireRot = GetMesh()->GetSocketRotation("SMG_Barrel");
+				auto emitterLoc = enemy->GetMesh()->GetSocketLocation(FName("HitEffectSocket"));
+				auto emitterRot = enemy->GetMesh()->GetSocketRotation(FName("HitEffectSocket"));
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), fireFactory,startLoc, fireRot, FVector(1, 1, 1));
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory,startLoc, fireRot, FVector(0.5));
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, fireRot, FVector(0.3, 0.1, 0.1));
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,emitterLoc, emitterRot, FVector(2, 2, 2));		
+				PlayAnimMontage(FireMontage, 1);
+				fsm->OnDamageProcess(10);
+				enemy->OnDamaged();
+			}
+			else
+			{
+				GetCharacterMovement()->StopActiveMovement();
+				GetCharacterMovement()->Activate();
+			}
+		}
 }
 
 void AVayneCharacter::OnOverlapEnemy(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
