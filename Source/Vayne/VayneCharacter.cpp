@@ -48,6 +48,7 @@ AVayneCharacter::AVayneCharacter()
 	TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
 	TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	TopDownCameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+	TopDownCameraComponent->FieldOfView=65.0f;
 
 	// Attack Circle Particle
 	AttackCircle = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AttackCircle"));
@@ -106,19 +107,19 @@ void AVayneCharacter::FireInput()
 				hitActors = Hit.GetActor();
 				if(hitActors)
 				{
-					AEnemy* enemy = Cast<AEnemy>(hitActors);
-					if(enemy)
+					enemyRef = Cast<AEnemy>(hitActors);
+					if(enemyRef)
 					{
-						CachedEnemyLoc=enemy->GetActorLocation();
-						enemyDist = this->GetDistanceTo(enemy);
+						CachedEnemyLoc=enemyRef->GetActorLocation();
+						enemyDist = this->GetDistanceTo(enemyRef);
 						// if attackable Range
 						if(enemyDist<=attackRange)
 						{
 							bool isMontagePlaying = GetMesh()->GetAnimInstance()->IsAnyMontagePlaying();
 							if(!isMontagePlaying)
 							{
-								StartTargetAttack(enemy);
-								FTimerDelegate attackDelegate = FTimerDelegate::CreateUObject( this, &AVayneCharacter::StartTargetAttack, enemy);
+								StartTargetAttack(enemyRef);
+								FTimerDelegate attackDelegate = FTimerDelegate::CreateUObject( this, &AVayneCharacter::StartTargetAttack, enemyRef);
 								GetWorldTimerManager().SetTimer(attackDelayHandle, attackDelegate, attackDelay, true);
 							}
 						}
@@ -126,11 +127,11 @@ void AVayneCharacter::FireInput()
 						else
 						{
 							bIsNotAttackableRange=true;
-							auto targetLoc = (enemy->GetActorLocation()-this->GetActorLocation()).GetSafeNormal();
-							UEnemyFSM* fsm = Cast<UEnemyFSM>(enemy->GetDefaultSubobjectByName(FName("enemyFSM")));
+							auto targetLoc = (enemyRef->GetActorLocation()-this->GetActorLocation()).GetSafeNormal();
+							UEnemyFSM* fsm = Cast<UEnemyFSM>(enemyRef->GetDefaultSubobjectByName(FName("enemyFSM")));
 							if(fsm)
 							{
-								FVector WorldDirection = (enemy->GetActorLocation() - GetActorLocation());
+								FVector WorldDirection = (enemyRef->GetActorLocation() - GetActorLocation());
 								auto charRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, GetActorUpVector());
 								SetActorRotation(FRotator(0, charRot.Yaw, 0));	
 							}							
@@ -202,12 +203,17 @@ void AVayneCharacter::StartTargetAttack(AEnemy* enemy)
 			auto charRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
 			this->SetActorRotation(FRotator(0, charRot.Yaw, 0));
 			FVector startLoc = GetMesh()->GetSocketLocation(FName("SMG_Barrel"));
+			FVector backFlashLoc = startLoc+GetActorForwardVector()*300.0f;
 			FRotator fireRot = GetMesh()->GetSocketRotation("SMG_Barrel");
-			auto emitterLoc = enemy->GetMesh()->GetSocketLocation(FName("HitEffectSocket"));
-			auto emitterRot = enemy->GetMesh()->GetSocketRotation(FName("HitEffectSocket"));
+			float randX = FMath::FRandRange(0.f, 20.f);
+			float randY = FMath::FRandRange(0.f, 4.f);
+			float randZ = FMath::FRandRange(0.f, 4.f);
+			FRotator trailRot = GetActorRotation()+FRotator(randX, randY, randZ);
+			FVector emitterLoc = enemy->GetMesh()->GetSocketLocation(FName("HitEffectSocket"));
+			FRotator emitterRot = enemy->GetMesh()->GetSocketRotation(FName("HitEffectSocket"));
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), fireFactory,startLoc, fireRot, FVector(1, 1, 1));
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory,startLoc, fireRot, FVector(0.5));
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, fireRot, FVector(0.3, 0.1, 0.1));
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory,backFlashLoc, fireRot, FVector(0.5));
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, trailRot, FVector(0.3, 0.1, 0.1));
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,emitterLoc, emitterRot, FVector(2, 2, 2));		
 			PlayAnimMontage(FireMontage, 1);
 			fsm->OnDamageProcess(10);
@@ -222,6 +228,7 @@ void AVayneCharacter::StartTargetAttack(AEnemy* enemy)
 		}
 		else
 		{
+			AttackCirclePlane->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 			GetCharacterMovement()->StopActiveMovement();
 			GetCharacterMovement()->Activate();
 		}
@@ -240,12 +247,17 @@ void AVayneCharacter::SecondTargetAttack(AEnemy* enemy)
 			auto charRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
 			this->SetActorRotation(FRotator(0, charRot.Yaw, 0));
 			FVector startLoc = GetMesh()->GetSocketLocation(FName("SMG_Barrel"));
+			FVector backFlashLoc = startLoc+GetActorForwardVector()*300.0f;
 			FRotator fireRot = GetMesh()->GetSocketRotation("SMG_Barrel");
+			float randX = FMath::FRandRange(0.f, 20.f);
+			float randY = FMath::FRandRange(0.f, 4.f);
+			float randZ = FMath::FRandRange(0.f, 4.f);
+			FRotator trailRot = GetActorRotation()+FRotator(randX, randY, randZ);
 			auto emitterLoc = enemy->GetMesh()->GetSocketLocation(FName("HitEffectSocket"));
 			auto emitterRot = enemy->GetMesh()->GetSocketRotation(FName("HitEffectSocket"));
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), fireFactory,startLoc, fireRot, FVector(1, 1, 1));
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory,startLoc, fireRot, FVector(0.5));
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, fireRot, FVector(0.3, 0.1, 0.1));
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory,backFlashLoc, fireRot, FVector(0.5));
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, trailRot, FVector(0.3, 0.1, 0.1));
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,emitterLoc, emitterRot, FVector(2, 2, 2));		
 			PlayAnimMontage(FireMontage, 1);
 			fsm->OnDamageProcess(10);
@@ -253,6 +265,7 @@ void AVayneCharacter::SecondTargetAttack(AEnemy* enemy)
 		}
 		else
 		{
+			AttackCirclePlane->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 			GetCharacterMovement()->StopActiveMovement();
 			GetCharacterMovement()->Activate();
 		}
@@ -271,12 +284,17 @@ void AVayneCharacter::ThirdTargetAttack(AEnemy* enemy)
 				auto charRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
 				this->SetActorRotation(FRotator(0, charRot.Yaw, 0));
 				FVector startLoc = GetMesh()->GetSocketLocation(FName("SMG_Barrel"));
+				FVector backFlashLoc = startLoc+GetActorForwardVector()*300.0f;
 				FRotator fireRot = GetMesh()->GetSocketRotation("SMG_Barrel");
+				float randX = FMath::FRandRange(0.f, 20.f);
+				float randY = FMath::FRandRange(0.f, 4.f);
+				float randZ = FMath::FRandRange(0.f, 4.f);
+				FRotator trailRot = GetActorRotation()+FRotator(randX, randY, randZ);
 				auto emitterLoc = enemy->GetMesh()->GetSocketLocation(FName("HitEffectSocket"));
 				auto emitterRot = enemy->GetMesh()->GetSocketRotation(FName("HitEffectSocket"));
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), fireFactory,startLoc, fireRot, FVector(1, 1, 1));
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory,startLoc, fireRot, FVector(0.5));
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, fireRot, FVector(0.3, 0.1, 0.1));
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory,backFlashLoc, fireRot, FVector(0.5));
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, trailRot, FVector(0.3, 0.1, 0.1));
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,emitterLoc, emitterRot, FVector(2, 2, 2));		
 				PlayAnimMontage(FireMontage, 1);
 				fsm->OnDamageProcess(10);
@@ -284,6 +302,7 @@ void AVayneCharacter::ThirdTargetAttack(AEnemy* enemy)
 			}
 			else
 			{
+				AttackCirclePlane->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 				GetCharacterMovement()->StopActiveMovement();
 				GetCharacterMovement()->Activate();
 			}
@@ -310,12 +329,12 @@ void AVayneCharacter::OnOverlapEnemy(UPrimitiveComponent* OverlappedComponent, A
 		OtherActor=hits[Closest].GetActor();
 	}
 	bool isMontagePlaying = GetMesh()->GetAnimInstance()->IsAnyMontagePlaying();
-	AEnemy* enemy = Cast<AEnemy>(OtherActor);
-	if(enemy&&bAttackMode&&!isMontagePlaying)
+	AEnemy* enemyOverlapped = Cast<AEnemy>(OtherActor);
+	if(enemyOverlapped&&bAttackMode&&!isMontagePlaying&&enemyOverlapped==enemyRef)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("enemy casted"))
-		StartTargetAttack(enemy);
-		FTimerDelegate attackDelegate = FTimerDelegate::CreateUObject( this, &AVayneCharacter::StartTargetAttack, enemy);
+		StartTargetAttack(enemyOverlapped);
+		FTimerDelegate attackDelegate = FTimerDelegate::CreateUObject( this, &AVayneCharacter::StartTargetAttack, enemyOverlapped);
 		GetWorldTimerManager().SetTimer(attackDelayHandle, attackDelegate, attackDelay, true);
 	}
 }

@@ -146,6 +146,8 @@ public:
 	UPROPERTY()
 	FTimerHandle burstHanndle2nd;
 
+	UPROPERTY()
+	class AEnemy* enemyRef;
 	
 
 
