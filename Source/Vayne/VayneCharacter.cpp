@@ -383,7 +383,7 @@ void AVayneCharacter::EndOverlapEnemy(UPrimitiveComponent* OverlappedComponent, 
 
 void AVayneCharacter::RollingTimeline(float Value)
 {
-	FVector newVelocity = (GetActorForwardVector()*800.0f)*Value;
+	FVector newVelocity = (GetActorForwardVector()*750.0f)*Value;
 	GetCharacterMovement()->Velocity=newVelocity;
 }
 
