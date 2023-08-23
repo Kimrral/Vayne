@@ -30,7 +30,7 @@ AVayneCharacter::AVayneCharacter()
 
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Rotate character to moving direction
-	GetCharacterMovement()->RotationRate = FRotator(0.f, 700.f, 0.f);
+	GetCharacterMovement()->RotationRate = FRotator(0.f, 600.f, 0.f);
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
 

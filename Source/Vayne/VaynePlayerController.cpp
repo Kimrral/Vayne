@@ -51,7 +51,7 @@ void AVaynePlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	Timeline.TickTimeline(DeltaSeconds);
+	//Timeline.TickTimeline(DeltaSeconds);
 }
 
 void AVaynePlayerController::SetPlayerRot(float Value)

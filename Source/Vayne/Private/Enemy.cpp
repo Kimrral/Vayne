@@ -8,6 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Vayne/VayneGameMode.h"
+#include "Vayne/VaynePlayerController.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -42,6 +43,7 @@ void AEnemy::BeginPlay()
 
 	enemyAnim = Cast<UEnemyAnim>(GetMesh()->GetAnimInstance());
 	gameMode = Cast<AVayneGameMode>(GetWorld()->GetAuthGameMode());
+	//playerController=Cast<AVaynePlayerController>(GetWorld()->GetFirstPlayerController());
 
 }
 
@@ -63,6 +65,7 @@ void AEnemy::CursorOver(UPrimitiveComponent* primComp)
 {
 	// Outline Render
 	GetMesh()->SetRenderCustomDepth(true);
+	//playerController->SetMouseCursorWidget(EMouseCursor::Default, enemyCursor);
 	gameMode->isCursorOnEnemy=true;
 }
 
@@ -70,6 +73,7 @@ void AEnemy::CursorOverEnd(UPrimitiveComponent* primComp)
 {
 	// Outline Render
 	GetMesh()->SetRenderCustomDepth(false);
+	//playerController->SetMouseCursorWidget(EMouseCursor::Default, defaultCursor);
 	gameMode->isCursorOnEnemy=false;
 }
 

@@ -45,6 +45,7 @@ void UPlayerAnim::AnimNotify_DashStart()
 
 void UPlayerAnim::AnimNotify_DashEnd()
 {
+	me->GetCharacterMovement()->StopActiveMovement();
 	playerController->EnableInput(playerController);
 	//me->GetCharacterMovement()->Activate();
 }
