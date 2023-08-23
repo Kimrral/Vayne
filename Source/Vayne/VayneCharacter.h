@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/TimelineComponent.h"
 #include "GameFramework/Character.h"
 #include "VayneCharacter.generated.h"
 
@@ -154,6 +155,15 @@ public:
 
 	UPROPERTY()
 	FVector dashCursorLoc;
+
+	UPROPERTY(EditAnywhere)  // Timeline 생성
+	FTimeline RollTimeline;					
+
+	UPROPERTY(EditAnywhere)  // Timeline 커브
+	UCurveFloat* RollingCurveFloat;  
+
+	UFUNCTION()  // Bind function
+	void RollingTimeline(float Value);
 
 	
 	

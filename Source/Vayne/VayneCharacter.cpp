@@ -6,11 +6,9 @@
 #include "EnemyFSM.h"
 #include "VayneGameMode.h"
 #include "VaynePlayerController.h"
-#include "AI/NavigationSystemBase.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Camera/CameraComponent.h"
-#include "Components/DecalComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
@@ -75,6 +73,8 @@ void AVayneCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 
+	RollTimeline.TickTimeline(DeltaSeconds);
+
 }
 
 void AVayneCharacter::BeginPlay()
@@ -86,6 +86,15 @@ void AVayneCharacter::BeginPlay()
 
 	AttackCirclePlane->OnComponentBeginOverlap.AddDynamic(this, &AVayneCharacter::OnOverlapEnemy);
 	AttackCirclePlane->OnComponentEndOverlap.AddDynamic(this, &AVayneCharacter::EndOverlapEnemy);
+
+	// Timeline Binding
+	if (RollingCurveFloat)
+	{
+		FOnTimelineFloat TimelineProgress;
+		TimelineProgress.BindDynamic(this, &AVayneCharacter::RollingTimeline);
+		RollTimeline.AddInterpFloat(RollingCurveFloat, TimelineProgress);
+		RollTimeline.SetTimelineLength(0.76f);
+	}
 
 }
 
@@ -175,9 +184,12 @@ void AVayneCharacter::FireInputReleased()
 
 void AVayneCharacter::SpaceInput()
 {
+	playerController->DisableInput(playerController);
 	playerController->Timeline.Stop();
+	RollTimeline.Stop();
 	AttackCirclePlane->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	GetCharacterMovement()->StopActiveMovement();
+	GetCharacterMovement()->Activate();
 	GetWorldTimerManager().ClearTimer(attackDelayHandle);
 	GetWorldTimerManager().ClearTimer(burstHandle);
 	GetWorldTimerManager().ClearTimer(burstHandle2nd);
@@ -190,7 +202,9 @@ void AVayneCharacter::SpaceInput()
 	FVector WorldDirection = (dashCursorLoc - this->GetActorLocation());
 	auto fireRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
 	this->SetActorRotation(FRotator(0, fireRot.Yaw, 0));
+	RollTimeline.PlayFromStart();
 	PlayAnimMontage(DashMontage, 1);
+	
 
 	
 }
@@ -365,5 +379,11 @@ void AVayneCharacter::EndOverlapEnemy(UPrimitiveComponent* OverlappedComponent, 
 	{
 		GetWorldTimerManager().ClearTimer(attackDelayHandle);
 	}
+}
+
+void AVayneCharacter::RollingTimeline(float Value)
+{
+	FVector newVelocity = (GetActorForwardVector()*800.0f)*Value;
+	GetCharacterMovement()->Velocity=newVelocity;
 }
 

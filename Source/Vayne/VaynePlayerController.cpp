@@ -3,17 +3,13 @@
 #include "VaynePlayerController.h"
 #include "GameFramework/Pawn.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
-#include "NiagaraSystem.h"
 #include "NiagaraFunctionLibrary.h"
 #include "VayneCharacter.h"
 #include "Engine/World.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "FrameTypes.h"
 #include "VayneGameMode.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
 AVaynePlayerController::AVaynePlayerController()
@@ -127,7 +123,7 @@ void AVaynePlayerController::OnSetDestinationTriggered()
 	// We flag that the input is being pressed
 	FollowTime += GetWorld()->GetDeltaSeconds();
 
-	Timeline.Stop();
+	//Timeline.Stop();
 	GetWorldTimerManager().ClearTimer(PlayerChar->attackDelayHandle);
 	
 	// We look for the location in the world where the player has pressed the input
@@ -153,7 +149,7 @@ void AVaynePlayerController::OnSetDestinationTriggered()
 	if (ControlledPawn != nullptr)
 	{
 		FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
-		Timeline.PlayFromStart();
+		//Timeline.PlayFromStart();
 		ControlledPawn->AddMovementInput(WorldDirection, 1.0, false);
 	}
 }
@@ -164,7 +160,7 @@ void AVaynePlayerController::OnSetDestinationReleased()
 	if (FollowTime <= ShortPressThreshold)
 	{
 		// We move there and spawn some particles
-		Timeline.PlayFromStart();
+		//Timeline.PlayFromStart();
 		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, CachedDestination);
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, CachedDestination, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
 	}

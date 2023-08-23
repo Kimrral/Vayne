@@ -40,12 +40,11 @@ void UPlayerAnim::AnimNotify_PlayerAttackEnd()
 
 void UPlayerAnim::AnimNotify_DashStart()
 {
-	playerController->DisableInput(playerController);
-	me->GetCharacterMovement()->Deactivate();
+	//me->GetCharacterMovement()->Deactivate();
 }
 
 void UPlayerAnim::AnimNotify_DashEnd()
 {
 	playerController->EnableInput(playerController);
-	me->GetCharacterMovement()->Activate();
+	//me->GetCharacterMovement()->Activate();
 }
