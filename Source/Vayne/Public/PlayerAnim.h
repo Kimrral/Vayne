@@ -34,5 +34,6 @@ public:
 	
 	UFUNCTION()
 	void AnimNotify_DashEnd();
+
 	
 };

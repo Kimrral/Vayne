@@ -253,6 +253,7 @@ void AVaynePlayerController::OnCamZoomOut()
 
 void AVaynePlayerController::OnSpace()
 {
+	PlayerChar->StopAnimMontage();
 	PlayerChar->SpaceInput();
 }
 

@@ -175,7 +175,6 @@ void AVayneCharacter::FireInputReleased()
 
 void AVayneCharacter::SpaceInput()
 {
-	StopAnimMontage();
 	playerController->Timeline.Stop();
 	AttackCirclePlane->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	GetCharacterMovement()->StopActiveMovement();
@@ -192,6 +191,7 @@ void AVayneCharacter::SpaceInput()
 	auto fireRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
 	this->SetActorRotation(FRotator(0, fireRot.Yaw, 0));
 	PlayAnimMontage(DashMontage, 1);
+
 	
 }
 
