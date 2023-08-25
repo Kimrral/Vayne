@@ -174,6 +174,12 @@ public:
 	UPROPERTY()
 	float rollingCooltime = 6.0f;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UUserWidget> spaceWidget;
+
+	UPROPERTY()
+	class UUserWidget* spaceUI;
+
 	
 	
 

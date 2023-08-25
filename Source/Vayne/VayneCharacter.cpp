@@ -7,6 +7,7 @@
 #include "VayneGameMode.h"
 #include "VaynePlayerController.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "Blueprint/UserWidget.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -95,6 +96,8 @@ void AVayneCharacter::BeginPlay()
 		RollTimeline.AddInterpFloat(RollingCurveFloat, TimelineProgress);
 		RollTimeline.SetTimelineLength(0.76f);
 	}
+
+	spaceUI=CreateWidget<UUserWidget>(GetWorld(), spaceWidget);
 
 }
 
@@ -187,6 +190,7 @@ void AVayneCharacter::SpaceInput()
 	if(bIsRollingAvailable)
 	{
 		bIsRollingAvailable=false;
+		spaceUI->AddToViewport();
 		playerController->DisableInput(playerController);
 		playerController->Timeline.Stop();
 		RollTimeline.Stop();
@@ -393,5 +397,6 @@ void AVayneCharacter::RollingTimeline(float Value)
 void AVayneCharacter::RollingEnable()
 {
 	bIsRollingAvailable=true;
+	spaceUI->RemoveFromParent();
 }
 
