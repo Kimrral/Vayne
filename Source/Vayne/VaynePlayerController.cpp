@@ -218,7 +218,6 @@ void AVaynePlayerController::OnFire()
 			{
 				CachedDestination = Hit.Location;
 			}
-			//UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursorRed, CachedDestination, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
 		}
 		Timeline.Stop();		
 		PlayerChar->FireInput();

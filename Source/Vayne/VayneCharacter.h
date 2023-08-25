@@ -165,6 +165,15 @@ public:
 	UFUNCTION()  // Bind function
 	void RollingTimeline(float Value);
 
+	UPROPERTY()
+	bool bIsRollingAvailable = true;
+
+	UFUNCTION()
+	void RollingEnable();
+
+	UPROPERTY()
+	float rollingCooltime = 6.0f;
+
 	
 	
 

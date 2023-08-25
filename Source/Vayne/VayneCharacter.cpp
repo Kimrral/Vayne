@@ -184,29 +184,32 @@ void AVayneCharacter::FireInputReleased()
 
 void AVayneCharacter::SpaceInput()
 {
-	playerController->DisableInput(playerController);
-	playerController->Timeline.Stop();
-	RollTimeline.Stop();
-	AttackCirclePlane->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	GetCharacterMovement()->StopActiveMovement();
-	GetCharacterMovement()->Activate();
-	GetWorldTimerManager().ClearTimer(attackDelayHandle);
-	GetWorldTimerManager().ClearTimer(burstHandle);
-	GetWorldTimerManager().ClearTimer(burstHandle2nd);
-	FHitResult Hit;
-	bool bHitSuccessful = playerController->GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1, true, Hit);
-	if (bHitSuccessful)
+	if(bIsRollingAvailable)
 	{
-		dashCursorLoc=Hit.Location;
-	}
-	FVector WorldDirection = (dashCursorLoc - this->GetActorLocation());
-	auto fireRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
-	this->SetActorRotation(FRotator(0, fireRot.Yaw, 0));
-	RollTimeline.PlayFromStart();
-	PlayAnimMontage(DashMontage, 1);
-	
-
-	
+		bIsRollingAvailable=false;
+		playerController->DisableInput(playerController);
+		playerController->Timeline.Stop();
+		RollTimeline.Stop();
+		AttackCirclePlane->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		GetCharacterMovement()->StopActiveMovement();
+		GetCharacterMovement()->Activate();
+		GetWorldTimerManager().ClearTimer(attackDelayHandle);
+		GetWorldTimerManager().ClearTimer(burstHandle);
+		GetWorldTimerManager().ClearTimer(burstHandle2nd);
+		FTimerHandle spaceCooltimeHandle;
+		FHitResult Hit;
+		bool bHitSuccessful = playerController->GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1, true, Hit);
+		if (bHitSuccessful)
+		{
+			dashCursorLoc=Hit.Location;
+		}
+		FVector WorldDirection = (dashCursorLoc - this->GetActorLocation());
+		auto fireRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
+		this->SetActorRotation(FRotator(0, fireRot.Yaw, 0));
+		RollTimeline.PlayFromStart();
+		PlayAnimMontage(DashMontage, 1);
+		GetWorldTimerManager().SetTimer(spaceCooltimeHandle, this, &AVayneCharacter::RollingEnable, rollingCooltime, false);
+	}	
 }
 
 void AVayneCharacter::CursorOver(UPrimitiveComponent* primComp)
@@ -385,5 +388,10 @@ void AVayneCharacter::RollingTimeline(float Value)
 {
 	FVector newVelocity = (GetActorForwardVector()*750.0f)*Value;
 	GetCharacterMovement()->Velocity=newVelocity;
+}
+
+void AVayneCharacter::RollingEnable()
+{
+	bIsRollingAvailable=true;
 }
 
