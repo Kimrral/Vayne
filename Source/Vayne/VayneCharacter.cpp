@@ -190,6 +190,7 @@ void AVayneCharacter::SpaceInput()
 	if(bIsRollingAvailable)
 	{
 		bIsRollingAvailable=false;
+		StopAnimMontage();
 		spaceUI->AddToViewport();
 		playerController->DisableInput(playerController);
 		playerController->Timeline.Stop();
