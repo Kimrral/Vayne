@@ -172,7 +172,7 @@ public:
 	void RollingEnable();
 
 	UPROPERTY()
-	float rollingCooltime = 6.0f;
+	float rollingCooltime = 5.0f;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> spaceWidget;
