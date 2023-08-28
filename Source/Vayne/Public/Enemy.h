@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EnemyHPWidget.h"
 #include "GameFramework/Character.h"
 #include "Enemy.generated.h"
 
@@ -62,12 +63,32 @@ public:
 	UFUNCTION()
 	void OnDestroy();
 
+	UFUNCTION()
+	void SetHPWidgetInvisible();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	int curHP;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=EnemySettings)
+	int maxHP = 100.0f;
+
 	UPROPERTY(EditAnywhere, Category=Montage)
 	UAnimMontage* damageMontage;
 
 	UPROPERTY(EditAnywhere, Category=Montage)
 	UAnimMontage* dieMontage;
 
+	UPROPERTY(EditAnywhere, Category=Widget)
+	class UWidgetComponent* HPWidgetComponent;
+
+	UPROPERTY()
+	class UEnemyHPWidget* enemyHPWidget;
+
+	UPROPERTY()
+	FTimerHandle HPWidgetInvisibleHandle;
+
+	UPROPERTY(EditAnywhere, Category=Widget)
+	class UMaterialParameterCollection* MPC_EnemyHP;
 
 
 

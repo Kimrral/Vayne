@@ -70,10 +70,7 @@ public:
 	UPROPERTY()
 	bool bIsAttacking;
 
-	UPROPERTY()
-	int curHP;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=EnemySettings)
-	int maxHP = 100.0f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=EnemySettings)
 	float attackDelayTime = 1.5f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=EnemySettings)

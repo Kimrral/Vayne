@@ -5,10 +5,14 @@
 
 #include "EnemyAnim.h"
 #include "EnemyFSM.h"
+#include "EnemyHPWidget.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/Image.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMaterialLibrary.h"
+#include "Materials/MaterialParameterCollection.h"
 #include "Vayne/VayneGameMode.h"
-#include "Vayne/VaynePlayerController.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -18,6 +22,10 @@ AEnemy::AEnemy()
 
 	// Enemy FSM
 	enemyFSM=CreateDefaultSubobject<UEnemyFSM>(TEXT("enemyFSM"));
+
+	// HP Widget Component
+	HPWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPWidgetComponent"));
+	HPWidgetComponent->SetupAttachment(RootComponent);
 
 	
 	// Character Mesh Setup
@@ -41,9 +49,15 @@ void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_EnemyHP, FName("EnemyHPAlpha"), 0.99);
+
+	// Set HP
+	curHP=maxHP;
+
 	enemyAnim = Cast<UEnemyAnim>(GetMesh()->GetAnimInstance());
 	gameMode = Cast<AVayneGameMode>(GetWorld()->GetAuthGameMode());
-	//playerController=Cast<AVaynePlayerController>(GetWorld()->GetFirstPlayerController());
+	enemyHPWidget = Cast<UEnemyHPWidget>(HPWidgetComponent->GetWidget());
+
 
 }
 
@@ -52,6 +66,14 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_EnemyHP, FName("EnemyHPAlpha"), curHP*0.01-0.001);
+	if(curHP<=0)
+	{
+		UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_EnemyHP, FName("EnemyHPAlpha"), 0.01);
+
+	}
+
+	
 }
 
 // Called to bind functionality to input
@@ -105,5 +127,13 @@ void AEnemy::OnDamaged()
 void AEnemy::OnDestroy()
 {
 	this->Destroy();
+}
+
+void AEnemy::SetHPWidgetInvisible()
+{	
+	GetWorldTimerManager().SetTimer(HPWidgetInvisibleHandle, FTimerDelegate::CreateLambda([this]()->void
+	{
+		HPWidgetComponent->SetVisibility(false);		
+	}), 3.0f, false);
 }
 

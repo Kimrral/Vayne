@@ -11,6 +11,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -235,9 +236,9 @@ void AVayneCharacter::OffAttackMode()
 void AVayneCharacter::StartTargetAttack(AEnemy* enemy)
 {
 	UEnemyFSM* fsm = Cast<UEnemyFSM>(enemy->GetDefaultSubobjectByName(FName("enemyFSM")));
-	if(fsm)
+	if(fsm&&enemy)
 	{
-		if(fsm->curHP>0)
+		if(enemy->curHP>0)
 		{
 			FVector WorldDirection = (CachedEnemyLoc - this->GetActorLocation());
 			auto charRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
@@ -279,9 +280,9 @@ void AVayneCharacter::SecondTargetAttack(AEnemy* enemy)
 {
 	StopAnimMontage(FireMontage);
 	UEnemyFSM* fsm = Cast<UEnemyFSM>(enemy->GetDefaultSubobjectByName(FName("enemyFSM")));
-	if(fsm)
+	if(fsm&&enemy)
 	{
-		if(fsm->curHP>0)
+		if(enemy->curHP>0)
 		{
 			FVector WorldDirection = (CachedEnemyLoc - this->GetActorLocation());
 			auto charRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
@@ -316,9 +317,9 @@ void AVayneCharacter::ThirdTargetAttack(AEnemy* enemy)
 {
 	StopAnimMontage(FireMontage);
 	UEnemyFSM* fsm = Cast<UEnemyFSM>(enemy->GetDefaultSubobjectByName(FName("enemyFSM")));
-		if(fsm)
+		if(fsm&&enemy)
 		{
-			if(fsm->curHP>0)
+			if(enemy->curHP>0)
 			{
 				FVector WorldDirection = (CachedEnemyLoc - this->GetActorLocation());
 				auto charRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
@@ -351,6 +352,15 @@ void AVayneCharacter::ThirdTargetAttack(AEnemy* enemy)
 
 void AVayneCharacter::OnOverlapEnemy(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if(OtherActor)
+	{
+		AEnemy* hpWidgetEnemy = Cast<AEnemy>(OtherActor);
+		if(hpWidgetEnemy)
+		{
+			GetWorldTimerManager().ClearTimer(hpWidgetEnemy->HPWidgetInvisibleHandle);
+			hpWidgetEnemy->HPWidgetComponent->SetVisibility(true);
+		}
+	}
 	TArray<FHitResult> hits;
 	if(SweepResult.GetNumOverlapHits(hits)>1)
 	{
@@ -381,6 +391,14 @@ void AVayneCharacter::OnOverlapEnemy(UPrimitiveComponent* OverlappedComponent, A
 
 void AVayneCharacter::EndOverlapEnemy(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	if(OtherActor)
+	{
+		AEnemy* hpWidgetEnemy = Cast<AEnemy>(OtherActor);
+		if(hpWidgetEnemy)
+		{
+			hpWidgetEnemy->SetHPWidgetInvisible();
+		}
+	}
 	bAttackMode=false;
 	AEnemy* enemy = Cast<AEnemy>(OtherActor);
 	if(enemy&&bAttackMode)

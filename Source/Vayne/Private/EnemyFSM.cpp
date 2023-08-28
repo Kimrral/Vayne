@@ -29,9 +29,6 @@ void UEnemyFSM::BeginPlay()
 
 	state = EEnemyState::IDLE;
 	me = Cast<AEnemy>(GetOwner());
-	
-	// Set HP
-	curHP=maxHP;
 
 	// Origin Location
 	originPosition = me->GetActorLocation();
@@ -159,8 +156,8 @@ void UEnemyFSM::TickDie()
 
 void UEnemyFSM::OnDamageProcess(int damageValue)
 {
-	curHP=FMath::Clamp(curHP-=damageValue, 0, 100);
-	if(curHP<=0)
+	me->curHP=FMath::Clamp(me->curHP-=damageValue, 0, 100);
+	if(me->curHP<=0)
 	{
 		// Die Process
 		SetState(EEnemyState::DIE);
@@ -170,7 +167,7 @@ void UEnemyFSM::OnDamageProcess(int damageValue)
 		// Damage Process
 		SetState(EEnemyState::DAMAGE);
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Enemy HP : %d"), curHP);
+	UE_LOG(LogTemp, Warning, TEXT("Enemy HP : %d"), me->curHP);
 }
 
 void UEnemyFSM::SetState(EEnemyState next)
