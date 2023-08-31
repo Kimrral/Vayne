@@ -20,11 +20,14 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
 	class UImage* HPBar;
-
+	
 	UPROPERTY(EditAnywhere)
 	class UMaterialInterface* HPBarMatInt;
 
 	UPROPERTY()	
 	class UMaterialInstanceDynamic* HPdynamicMat;
+
+	UPROPERTY()
+	float coolDownTimeFloat;
 	
 };

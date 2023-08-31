@@ -61,9 +61,6 @@ void AEnemy::BeginPlay()
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	//if(enemyHPWidget->HPdynamicMat)
-	//enemyHPWidget->HPdynamicMat->SetScalarParameterValue(FName("HPAlpha"), 0.5);
 		
 }
 

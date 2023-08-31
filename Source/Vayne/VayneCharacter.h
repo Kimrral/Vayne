@@ -67,6 +67,9 @@ public:
 	UFUNCTION()
 	void EndOverlapEnemy(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	UFUNCTION()
+	void SetWidgetCooldownText();
+
 	UPROPERTY()
 	class AActor* hitActors;
 
@@ -174,11 +177,17 @@ public:
 	UPROPERTY()
 	float rollingCooltime = 5.0f;
 
+	UPROPERTY()
+	float rollingCooltimeText = 5.0f;
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> spaceWidget;
 
 	UPROPERTY()
-	class UUserWidget* spaceUI;
+	class UPlayerSpaceWidget* spaceUI;
+
+	UPROPERTY()
+	FTimerHandle cooldownTextHandle;
 
 	
 	

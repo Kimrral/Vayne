@@ -87,9 +87,5 @@ public:
 	UPROPERTY()
 	FTimerHandle HPWidgetInvisibleHandle;
 
-	UPROPERTY(EditAnywhere, Category=Widget)
-	class UMaterialParameterCollection* MPC_EnemyHP;
-
-
 
 };

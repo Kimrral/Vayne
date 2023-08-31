@@ -4,6 +4,7 @@
 
 #include "Enemy.h"
 #include "EnemyFSM.h"
+#include "PlayerSpaceWidget.h"
 #include "VayneGameMode.h"
 #include "VaynePlayerController.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
@@ -11,6 +12,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/TextBlock.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
@@ -98,7 +100,7 @@ void AVayneCharacter::BeginPlay()
 		RollTimeline.SetTimelineLength(0.76f);
 	}
 
-	spaceUI=CreateWidget<UUserWidget>(GetWorld(), spaceWidget);
+	spaceUI=CreateWidget<UPlayerSpaceWidget>(GetWorld(), spaceWidget);
 
 }
 
@@ -214,7 +216,9 @@ void AVayneCharacter::SpaceInput()
 		this->SetActorRotation(FRotator(0, fireRot.Yaw, 0));
 		RollTimeline.PlayFromStart();
 		PlayAnimMontage(DashMontage, 1);
-		GetWorldTimerManager().SetTimer(spaceCooltimeHandle, this, &AVayneCharacter::RollingEnable, rollingCooltime, false);
+		spaceUI->TimerText->SetText(FText::AsNumber(rollingCooltimeText));
+		GetWorldTimerManager().SetTimer(cooldownTextHandle, this, &AVayneCharacter::SetWidgetCooldownText, 1, true);
+		GetWorldTimerManager().SetTimer(spaceCooltimeHandle, this, &AVayneCharacter::RollingEnable, rollingCooltime, false);		
 	}	
 }
 
@@ -407,6 +411,12 @@ void AVayneCharacter::EndOverlapEnemy(UPrimitiveComponent* OverlappedComponent, 
 	}
 }
 
+void AVayneCharacter::SetWidgetCooldownText()
+{
+	rollingCooltimeText-=1;
+	spaceUI->TimerText->SetText(FText::AsNumber(rollingCooltimeText));
+}
+
 void AVayneCharacter::RollingTimeline(float Value)
 {
 	FVector newVelocity = (GetActorForwardVector()*750.0f)*Value;
@@ -416,6 +426,8 @@ void AVayneCharacter::RollingTimeline(float Value)
 void AVayneCharacter::RollingEnable()
 {
 	bIsRollingAvailable=true;
+	GetWorldTimerManager().ClearTimer(cooldownTextHandle);
+	rollingCooltimeText=5.f;
 	spaceUI->RemoveFromParent();
 }
 
