@@ -15,13 +15,16 @@ class VAYNE_API UEnemyHPWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-
+	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
 	class UImage* HPBar;
 
-	UPROPERTY(EditAnywhere, Category=Widget)
-	class UMaterialParameterCollection* MPC_EnemyHP;
+	UPROPERTY(EditAnywhere)
+	class UMaterialInterface* HPBarMatInt;
+
+	UPROPERTY()	
+	class UMaterialInstanceDynamic* HPdynamicMat;
 	
 };

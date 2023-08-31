@@ -8,6 +8,7 @@
 #include "EntitySystem/MovieSceneEntitySystemRunner.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMaterialLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Vayne/VayneCharacter.h"
 
@@ -161,11 +162,15 @@ void UEnemyFSM::OnDamageProcess(int damageValue)
 	{
 		// Die Process
 		SetState(EEnemyState::DIE);
+		//UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), me->MPC_EnemyHP, FName("EnemyHPAlpha"), 0.01);
+		me->enemyHPWidget->HPdynamicMat->SetScalarParameterValue(FName("HPAlpha"), 0.01);
 	}
 	else
 	{
 		// Damage Process
 		SetState(EEnemyState::DAMAGE);
+		//UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), me->MPC_EnemyHP, FName("EnemyHPAlpha"), me->curHP*0.01-0.001);
+		me->enemyHPWidget->HPdynamicMat->SetScalarParameterValue(FName("HPAlpha"), me->curHP*0.01-0.001);
 	}
 	UE_LOG(LogTemp, Warning, TEXT("Enemy HP : %d"), me->curHP);
 }

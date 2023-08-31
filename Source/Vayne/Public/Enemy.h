@@ -69,7 +69,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int curHP;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=EnemySettings)
+	UPROPERTY(EditAnywhere, Category=EnemySettings)
 	int maxHP = 100.0f;
 
 	UPROPERTY(EditAnywhere, Category=Montage)

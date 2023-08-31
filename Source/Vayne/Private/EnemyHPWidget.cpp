@@ -7,9 +7,18 @@
 #include "Components/Image.h"
 #include "Kismet/KismetMaterialLibrary.h"
 
+void UEnemyHPWidget::NativePreConstruct()
+{
+	Super::NativePreConstruct();
+
+	HPBar->SetBrushFromMaterial(HPBarMatInt);
+}
+
 void UEnemyHPWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_EnemyHP, FName("EnemyHPAlpha"), 0.99);
+	HPdynamicMat = HPBar->GetDynamicMaterial();
+
+	
 }

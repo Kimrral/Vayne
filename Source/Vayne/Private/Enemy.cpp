@@ -11,7 +11,6 @@
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMaterialLibrary.h"
-#include "Materials/MaterialParameterCollection.h"
 #include "Vayne/VayneGameMode.h"
 
 // Sets default values
@@ -49,15 +48,12 @@ void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_EnemyHP, FName("EnemyHPAlpha"), 0.99);
-
 	// Set HP
 	curHP=maxHP;
 
 	enemyAnim = Cast<UEnemyAnim>(GetMesh()->GetAnimInstance());
 	gameMode = Cast<AVayneGameMode>(GetWorld()->GetAuthGameMode());
 	enemyHPWidget = Cast<UEnemyHPWidget>(HPWidgetComponent->GetWidget());
-
 
 }
 
@@ -66,14 +62,9 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_EnemyHP, FName("EnemyHPAlpha"), curHP*0.01-0.001);
-	if(curHP<=0)
-	{
-		UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_EnemyHP, FName("EnemyHPAlpha"), 0.01);
-
-	}
-
-	
+	//if(enemyHPWidget->HPdynamicMat)
+	//enemyHPWidget->HPdynamicMat->SetScalarParameterValue(FName("HPAlpha"), 0.5);
+		
 }
 
 // Called to bind functionality to input
