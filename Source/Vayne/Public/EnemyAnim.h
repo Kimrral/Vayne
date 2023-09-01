@@ -29,6 +29,9 @@ public:
 
 	UFUNCTION()
 	void AnimNotify_DamageEnd();
+
+	UFUNCTION()
+	void AnimNotify_DieEnd();
 	
 	// Casting 변수를 전역변수로 선언한다.
 	UPROPERTY()

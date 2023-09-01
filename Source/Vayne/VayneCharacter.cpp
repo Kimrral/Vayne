@@ -362,6 +362,7 @@ void AVayneCharacter::OnOverlapEnemy(UPrimitiveComponent* OverlappedComponent, A
 		if(hpWidgetEnemy)
 		{
 			GetWorldTimerManager().ClearTimer(hpWidgetEnemy->HPWidgetInvisibleHandle);
+			hpWidgetEnemy->enemyHPWidget->HPdynamicMat->SetScalarParameterValue(FName("HPAlpha"), hpWidgetEnemy->curHP*0.01-0.001);
 			hpWidgetEnemy->HPWidgetComponent->SetVisibility(true);
 		}
 	}
