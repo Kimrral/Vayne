@@ -123,7 +123,7 @@ void AVayneCharacter::FireInput()
 				if(hitActors)
 				{
 					enemyRef = Cast<AEnemy>(hitActors);
-					if(enemyRef)
+					if(enemyRef&&enemyRef->curHP>0)
 					{
 						CachedEnemyLoc=enemyRef->GetActorLocation();
 						enemyDist = this->GetDistanceTo(enemyRef);

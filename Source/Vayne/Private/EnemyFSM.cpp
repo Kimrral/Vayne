@@ -160,15 +160,15 @@ void UEnemyFSM::OnDamageProcess(int damageValue)
 	me->curHP=FMath::Clamp(me->curHP-=damageValue, 0, 100);
 	if(me->curHP<=0)
 	{
+		me->enemyHPWidget->HPdynamicMat->SetScalarParameterValue(FName("HPAlpha"), 0);
 		// Die Process
 		SetState(EEnemyState::DIE);
-		me->enemyHPWidget->HPdynamicMat->SetScalarParameterValue(FName("HPAlpha"), 0.01);
 	}
 	else
 	{
+		me->enemyHPWidget->HPdynamicMat->SetScalarParameterValue(FName("HPAlpha"), me->curHP*0.01-0.001);
 		// Damage Process
 		SetState(EEnemyState::DAMAGE);
-		me->enemyHPWidget->HPdynamicMat->SetScalarParameterValue(FName("HPAlpha"), me->curHP*0.01-0.001);
 	}
 	UE_LOG(LogTemp, Warning, TEXT("Enemy HP : %d"), me->curHP);
 }

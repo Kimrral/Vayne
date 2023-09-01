@@ -75,9 +75,6 @@ public:
 	UPROPERTY(EditAnywhere, Category=Montage)
 	UAnimMontage* damageMontage;
 
-	UPROPERTY(EditAnywhere, Category=Montage)
-	UAnimMontage* dieMontage;
-
 	UPROPERTY(EditAnywhere, Category=Widget)
 	class UWidgetComponent* HPWidgetComponent;
 

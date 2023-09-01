@@ -44,7 +44,6 @@ void UEnemyAnim::AnimNotify_DamageEnd()
 
 void UEnemyAnim::AnimNotify_DieEnd()
 {
-	me->GetMesh()->SetSimulatePhysics(true);
 	me->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
