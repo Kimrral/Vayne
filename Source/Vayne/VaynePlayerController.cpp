@@ -269,6 +269,6 @@ void AVaynePlayerController::Turn()
 {
 	if(PlayerChar->isAPressed==false)
 	{
-		PlayerChar->CameraBoom->AddRelativeRotation(FRotator(0, AxisValue, 0));
+		PlayerChar->CameraBoom->AddRelativeRotation(FRotator(0, AxisValue*0.7, 0));
 	}
 }
