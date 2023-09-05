@@ -118,6 +118,12 @@ public:
 	void OnCamZoomOut();
 	void OnSpace();
 	void SetAttackModeDisable();
+	
+	// 회전처리 함수
+	void Turn();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float AxisValue;
 
 private:
 

@@ -32,9 +32,6 @@ AEnemy::AEnemy()
 	GetMesh()->OnBeginCursorOver.AddDynamic(this, &AEnemy::CursorOver);
 	GetMesh()->OnEndCursorOver.AddDynamic(this, &AEnemy::CursorOverEnd);
 
-	// Set Walk Speed
-	//GetCharacterMovement()->MaxWalkSpeed=200.f;
-
 	// Enemy Anim Blueprints
 	ConstructorHelpers::FClassFinder<UAnimInstance> tempAnim(TEXT("/Script/Engine.AnimBlueprint'/Game/Blueprints/ABP_Guardian.ABP_Guardian_C'"));
 	if(tempAnim.Succeeded())
@@ -75,7 +72,6 @@ void AEnemy::CursorOver(UPrimitiveComponent* primComp)
 {
 	// Outline Render
 	GetMesh()->SetRenderCustomDepth(true);
-	//playerController->SetMouseCursorWidget(EMouseCursor::Default, enemyCursor);
 	gameMode->isCursorOnEnemy=true;
 }
 
@@ -83,7 +79,6 @@ void AEnemy::CursorOverEnd(UPrimitiveComponent* primComp)
 {
 	// Outline Render
 	GetMesh()->SetRenderCustomDepth(false);
-	//playerController->SetMouseCursorWidget(EMouseCursor::Default, defaultCursor);
 	gameMode->isCursorOnEnemy=false;
 }
 
@@ -99,7 +94,6 @@ void AEnemy::OnDie()
 	GetCharacterMovement()->Deactivate();
 	StopAnimMontage();
 	auto capsule = GetCapsuleComponent();
-	//SetActorEnableCollision(false);
 	capsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetWorldTimerManager().SetTimer(destroyHandle, this, &AEnemy::OnDestroy, 10.0f, false);

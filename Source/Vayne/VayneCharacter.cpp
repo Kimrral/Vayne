@@ -106,16 +106,17 @@ void AVayneCharacter::BeginPlay()
 
 void AVayneCharacter::FireInput()
 {
-	// if A Pressed
+	// A키와 함께 인풋이 들어왔다면
 	if(isAPressed)
 	{
-		// if Cursor is on Enemy
+		// 마우스 커서가 적 위에 놓여있다면
 		if(gameMode->isCursorOnEnemy==true)
 		{
 			bAttackMode = true;
 			GetWorldTimerManager().ClearTimer(attackDelayHandle);
 			GetWorldTimerManager().ClearTimer(attackModeHandle);
 			FHitResult Hit;
+			// 커서 충돌 결과값 도출
 			bool bHitSuccessful = playerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
 			if (bHitSuccessful)
 			{
@@ -127,29 +128,35 @@ void AVayneCharacter::FireInput()
 					{
 						CachedEnemyLoc=enemyRef->GetActorLocation();
 						enemyDist = this->GetDistanceTo(enemyRef);
-						// if attackable Range
+						// 캐스팅한 적이 공격 가능한 범위에 있다면
 						if(enemyDist<=attackRange)
 						{
+							// 다른 몽타주가 재생되고 있지 않다면
 							bool isMontagePlaying = GetMesh()->GetAnimInstance()->IsAnyMontagePlaying();
 							if(!isMontagePlaying)
 							{
+								// 타겟 공격 프로세스 수행
 								StartTargetAttack(enemyRef);
+								// 점사 공격 타이머 설정
 								FTimerDelegate attackDelegate = FTimerDelegate::CreateUObject( this, &AVayneCharacter::StartTargetAttack, enemyRef);
 								GetWorldTimerManager().SetTimer(attackDelayHandle, attackDelegate, attackDelay, true);
 							}
 						}
-						// if not attackable Range
+						// 캐스팅한 적이 공격 가능 범위 내에 있지 않다면
 						else
 						{
 							bIsNotAttackableRange=true;
 							auto targetLoc = (enemyRef->GetActorLocation()-this->GetActorLocation()).GetSafeNormal();
+							// Enemy 상태머신 캐스팅
 							UEnemyFSM* fsm = Cast<UEnemyFSM>(enemyRef->GetDefaultSubobjectByName(FName("enemyFSM")));
 							if(fsm)
 							{
+								// 적 위치를 기반으로 캐릭터 회전 Yaw값 설정
 								FVector WorldDirection = (enemyRef->GetActorLocation() - GetActorLocation());
 								auto charRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, GetActorUpVector());
 								SetActorRotation(FRotator(0, charRot.Yaw, 0));	
-							}							
+							}
+							// 캐치된 적 위치로 이동
 							AddMovementInput(targetLoc, 1, false);
 							UAIBlueprintHelperLibrary::SimpleMoveToLocation(playerController, CachedEnemyLoc);
 						}
@@ -160,13 +167,11 @@ void AVayneCharacter::FireInput()
 		// if Cursor is not on Enemy
 		else
 		{
-			//playerController->OnSetDestinationTriggered();
 		}
 	}
 	// if A is not Pressed
 	else
 	{
-
 	}
 }
 
@@ -186,10 +191,16 @@ void AVayneCharacter::FireInputReleased()
 			playerController->OnSetDestinationReleased();
 		}
 	}
+	// if A is not Pressed
+	else
+	{
+		
+	}
 }
 
 void AVayneCharacter::SpaceInput()
 {
+	// 1회 실행을 위한 불리언
 	if(bIsRollingAvailable)
 	{
 		bIsRollingAvailable=false;
@@ -206,9 +217,11 @@ void AVayneCharacter::SpaceInput()
 		GetWorldTimerManager().ClearTimer(burstHandle2nd);
 		FTimerHandle spaceCooltimeHandle;
 		FHitResult Hit;
+		// 마우스 방향값 산출을 위한 HitResult 수행
 		bool bHitSuccessful = playerController->GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1, true, Hit);
 		if (bHitSuccessful)
 		{
+			// 마우스 방향값 캐싱
 			dashCursorLoc=Hit.Location;
 		}
 		FVector WorldDirection = (dashCursorLoc - this->GetActorLocation());
@@ -431,4 +444,3 @@ void AVayneCharacter::RollingEnable()
 	rollingCooltimeText=5.f;
 	spaceUI->RemoveFromParent();
 }
-
