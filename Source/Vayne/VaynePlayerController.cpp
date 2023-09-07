@@ -240,12 +240,12 @@ void AVaynePlayerController::OnFireReleased()
 
 void AVaynePlayerController::OnCamZoom()
 {
-	PlayerChar->CameraBoom->TargetArmLength=FMath::Clamp(PlayerChar->CameraBoom->TargetArmLength-=100, 600, 2500);
+	PlayerChar->CameraBoom->TargetArmLength=FMath::Clamp(PlayerChar->CameraBoom->TargetArmLength-=100, 600, 3500);
 }
 
 void AVaynePlayerController::OnCamZoomOut()
 {
-	PlayerChar->CameraBoom->TargetArmLength=FMath::Clamp(PlayerChar->CameraBoom->TargetArmLength+=100, 600, 2500);
+	PlayerChar->CameraBoom->TargetArmLength=FMath::Clamp(PlayerChar->CameraBoom->TargetArmLength+=100, 600, 3500);
 }
 
 void AVaynePlayerController::OnSpace()

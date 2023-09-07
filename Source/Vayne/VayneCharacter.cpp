@@ -209,6 +209,7 @@ void AVayneCharacter::SpaceInput()
 			spaceUI->AddToViewport();
 		}
 		playerController->DisableInput(playerController);
+		//playerController->SetIgnoreMoveInput(true);
 		playerController->Timeline.Stop();
 		RollTimeline.Stop();
 		AttackCirclePlane->SetCollisionEnabled(ECollisionEnabled::QueryOnly);

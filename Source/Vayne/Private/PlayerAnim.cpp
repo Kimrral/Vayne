@@ -38,4 +38,6 @@ void UPlayerAnim::AnimNotify_DashEnd()
 {
 	me->GetCharacterMovement()->StopActiveMovement();
 	playerController->EnableInput(playerController);
+	//playerController->SetIgnoreMoveInput(false);
+
 }

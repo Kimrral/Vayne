@@ -15,7 +15,9 @@ class VAYNE_API UPlayerSpaceWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
@@ -37,4 +39,6 @@ public:
 	void OnHovered();
 	UFUNCTION()
 	void UnHovered();
+	UFUNCTION()
+	void SetSkillInfoLoc();
 };

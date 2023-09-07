@@ -9,28 +9,34 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Vayne/VaynePlayerController.h"
 
+void UPlayerSpaceWidget::NativePreConstruct()
+{
+	Super::NativePreConstruct();
+
+	//HoverButton->OnHovered.AddDynamic(this, &UPlayerSpaceWidget::OnHovered);
+	//HoverButton->OnUnhovered.AddDynamic(this, &UPlayerSpaceWidget::UnHovered);
+}
+
 void UPlayerSpaceWidget::NativeConstruct()
 {
 	Super::NativeConstruct();	
-	
-	HoverButton->OnHovered.AddDynamic(this, &UPlayerSpaceWidget::OnHovered);
-	HoverButton->OnUnhovered.AddDynamic(this, &UPlayerSpaceWidget::UnHovered);
-	
+
 	controller = Cast<AVaynePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	
+}
+
+void UPlayerSpaceWidget::NativeDestruct()
+{
+	Super::NativeDestruct();
+
+	//UnHovered();
 }
 
 void UPlayerSpaceWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-
-	if(controller)
-	{
-		float XLoc;
-		float YLoc;
-		controller->GetMousePosition(XLoc, YLoc);
-		auto renderLoc = UKismetMathLibrary::MakeVector2D(XLoc, YLoc);
-		SkillInfo->SetRenderTranslation(renderLoc);
-	}
+	
+	SetSkillInfoLoc();
 	
 }
 
@@ -41,6 +47,22 @@ void UPlayerSpaceWidget::OnHovered()
 
 void UPlayerSpaceWidget::UnHovered()
 {
-	SkillInfo->SetVisibility(ESlateVisibility::Hidden);
+	bool isV = SkillInfo->IsVisible();
+	if(isV)
+	{
+		SkillInfo->SetVisibility(ESlateVisibility::Hidden);
+	}
 
+}
+
+void UPlayerSpaceWidget::SetSkillInfoLoc()
+{
+	if(controller)
+	{
+		float XLoc;
+		float YLoc;
+		controller->GetMousePosition(XLoc, YLoc);
+		auto renderLoc = UKismetMathLibrary::MakeVector2D(XLoc, YLoc);
+		SkillInfo->SetRenderTranslation(renderLoc);
+	}
 }
