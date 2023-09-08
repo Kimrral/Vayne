@@ -282,9 +282,9 @@ void AVayneCharacter::StartTargetAttack(AEnemy* enemy)
 			AttackCircle->SetVisibility(false);
 			AttackCirclePlane->SetVisibility(false);
 			FTimerDelegate secondAttackDelegate = FTimerDelegate::CreateUObject( this, &AVayneCharacter::SecondTargetAttack, enemy);
-			GetWorldTimerManager().SetTimer(burstHandle, secondAttackDelegate, 0.1f, false);
+			GetWorldTimerManager().SetTimer(burstHandle, secondAttackDelegate, 0.07f, false);
 			FTimerDelegate thirdAttackDelegate = FTimerDelegate::CreateUObject( this, &AVayneCharacter::ThirdTargetAttack, enemy);
-			GetWorldTimerManager().SetTimer(burstHandle2nd, thirdAttackDelegate, 0.2f, false);
+			GetWorldTimerManager().SetTimer(burstHandle2nd, thirdAttackDelegate, 0.14f, false);
 			GetWorldTimerManager().SetTimer(attackModeHandle, this, &AVayneCharacter::OffAttackMode, 3.0, false);
 		}
 		else
