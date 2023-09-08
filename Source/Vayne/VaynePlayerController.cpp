@@ -10,6 +10,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "VayneGameMode.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
 AVaynePlayerController::AVaynePlayerController()
@@ -104,6 +105,10 @@ void AVaynePlayerController::SetupInputComponent()
 
 		// Space input events
 		EnhancedInputComponent->BindAction(IA_Space, ETriggerEvent::Started, this, &AVaynePlayerController::OnSpace);
+
+		// Tab input events
+		EnhancedInputComponent->BindAction(IA_Tab, ETriggerEvent::Started, this, &AVaynePlayerController::OnTab);
+		EnhancedInputComponent->BindAction(IA_Tab, ETriggerEvent::Completed, this, &AVaynePlayerController::OnTabReleased);
 
 		
 		// Setup touch input events
@@ -225,6 +230,22 @@ void AVaynePlayerController::OnFire()
 		PlayerChar->FireInput();
 	}
 	
+}
+
+void AVaynePlayerController::OnTab()
+{
+	// Set Time Dilation
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.08);
+	// Set Pitch Modulation
+	UGameplayStatics::SetGlobalPitchModulation(GetWorld(), 0.00001f, 0.3f);
+}
+
+void AVaynePlayerController::OnTabReleased()
+{
+	// Set Time Dilation
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1);
+	// Set Pitch Modulation
+	UGameplayStatics::SetGlobalPitchModulation(GetWorld(), 1, 0.3f);
 }
 
 void AVaynePlayerController::OnFireReleased()

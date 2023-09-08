@@ -65,6 +65,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputAction* IA_Space;
 
+	// Tab
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	class UInputAction* IA_Tab;
+
 	// Player Character Casting
 	UPROPERTY()
 	class AVayneCharacter* PlayerChar;
@@ -113,6 +117,8 @@ public:
 	void OnAttackReleased();
 	void OnStop();
 	void OnFire();
+	void OnTab();
+	void OnTabReleased();
 	void OnFireReleased();
 	void OnCamZoom();
 	void OnCamZoomOut();
