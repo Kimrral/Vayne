@@ -71,7 +71,7 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void AEnemy::CursorOver(UPrimitiveComponent* primComp)
 {
 	// Outline Render
-	GetMesh()->SetRenderCustomDepth(true);
+	GetMesh()->SetRenderCustomDepth(true);	
 	gameMode->isCursorOnEnemy=true;
 }
 
@@ -101,9 +101,16 @@ void AEnemy::OnDie()
 
 void AEnemy::OnDamaged()
 {
+	FTimerHandle overlayMatHandle;
 	GetController()->StopMovement();
 	GetCharacterMovement()->Deactivate();
+	GetMesh()->SetOverlayMaterial(overlayMatRed);
 	PlayAnimMontage(damageMontage, 1);
+	GetWorldTimerManager().ClearTimer(overlayMatHandle);
+	GetWorldTimerManager().SetTimer(overlayMatHandle, FTimerDelegate::CreateLambda([this]()->void
+	{
+		GetMesh()->SetOverlayMaterial(nullptr);
+	}), 0.3f, false);
 }
 
 void AEnemy::OnDestroy()

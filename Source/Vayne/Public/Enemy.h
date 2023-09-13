@@ -72,17 +72,22 @@ public:
 	UPROPERTY(EditAnywhere, Category=EnemySettings)
 	int maxHP = 100.0f;
 
-	UPROPERTY(EditAnywhere, Category=Montage)
+	UPROPERTY(EditAnywhere, Category=EnemySettings)
 	UAnimMontage* damageMontage;
 
-	UPROPERTY(EditAnywhere, Category=Widget)
+	UPROPERTY(EditAnywhere, Category=EnemySettings)
 	class UWidgetComponent* HPWidgetComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=EnemySettings)
+	class UMaterialInterface* overlayMatRed;
 
 	UPROPERTY()
 	class UEnemyHPWidget* enemyHPWidget;
 
 	UPROPERTY()
 	FTimerHandle HPWidgetInvisibleHandle;
+
+
 
 
 };
