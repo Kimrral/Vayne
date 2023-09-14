@@ -3,9 +3,7 @@
 
 #include "EnemyHPWidget.h"
 
-#include "Enemy.h"
 #include "Components/Image.h"
-#include "Kismet/KismetMaterialLibrary.h"
 
 void UEnemyHPWidget::NativePreConstruct()
 {

@@ -7,10 +7,8 @@
 #include "EnemyFSM.h"
 #include "EnemyHPWidget.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/Image.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/KismetMaterialLibrary.h"
 #include "Vayne/VayneGameMode.h"
 
 // Sets default values

@@ -42,15 +42,6 @@ public:
 	UPROPERTY()
 	class UEnemyAnim* enemyAnim;
 
-	//UPROPERTY()
-	//class AVaynePlayerController* playerController;
-
-	//UPROPERTY(EditAnywhere, Category=Cursor)
-	//class UUserWidget* enemyCursor;
-
-	//UPROPERTY(EditAnywhere, Category=Cursor)
-	//class UUserWidget* defaultCursor;
-
 	UFUNCTION()
 	void Move();
 
