@@ -277,7 +277,7 @@ void AVayneCharacter::StartTargetAttack(AEnemy* enemy)
 	UEnemyFSM* fsm = Cast<UEnemyFSM>(enemy->GetDefaultSubobjectByName(FName("enemyFSM")));
 	if(fsm&&enemy)
 	{
-		if(enemy->curHP>0)
+		if(enemy->curHP>0&&gameMode->isCursorOnEnemy)
 		{
 			FVector WorldDirection = (aimingPointLoc - this->GetActorLocation());
 			auto charRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
@@ -292,8 +292,8 @@ void AVayneCharacter::StartTargetAttack(AEnemy* enemy)
 			FVector emitterLoc = enemy->GetMesh()->GetSocketLocation(FName("HitEffectSocket"));
 			FRotator emitterRot = enemy->GetMesh()->GetSocketRotation(FName("HitEffectSocket"));
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), fireFactory,startLoc, fireRot, FVector(1, 1, 1));
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, trailRot, FVector(0.3, 0.1, 0.1));
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,emitterLoc, emitterRot, FVector(2, 2, 2));		
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, charRot, FVector(0.3, 0.1, 0.1));
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,aimingPointLoc, emitterRot, FVector(2, 2, 2));		
 			PlayAnimMontage(FireMontage, 1);
 			fsm->OnDamageProcess(10);
 			enemy->OnDamaged();
@@ -320,7 +320,7 @@ void AVayneCharacter::SecondTargetAttack(AEnemy* enemy)
 	UEnemyFSM* fsm = Cast<UEnemyFSM>(enemy->GetDefaultSubobjectByName(FName("enemyFSM")));
 	if(fsm&&enemy)
 	{
-		if(enemy->curHP>0)
+		if(enemy->curHP>0&&gameMode->isCursorOnEnemy)
 		{
 			FVector WorldDirection = (aimingPointLoc - this->GetActorLocation());
 			auto charRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
@@ -335,8 +335,8 @@ void AVayneCharacter::SecondTargetAttack(AEnemy* enemy)
 			auto emitterLoc = enemy->GetMesh()->GetSocketLocation(FName("HitEffectSocket"));
 			auto emitterRot = enemy->GetMesh()->GetSocketRotation(FName("HitEffectSocket"));
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), fireFactory,startLoc, fireRot, FVector(1, 1, 1));
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, trailRot, FVector(0.3, 0.1, 0.1));
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,emitterLoc, emitterRot, FVector(2, 2, 2));		
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, charRot, FVector(0.3, 0.1, 0.1));
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,aimingPointLoc, emitterRot, FVector(2, 2, 2));		
 			PlayAnimMontage(FireMontage, 1);
 			fsm->OnDamageProcess(10);
 			enemy->OnDamaged();
@@ -356,7 +356,7 @@ void AVayneCharacter::ThirdTargetAttack(AEnemy* enemy)
 	UEnemyFSM* fsm = Cast<UEnemyFSM>(enemy->GetDefaultSubobjectByName(FName("enemyFSM")));
 		if(fsm&&enemy)
 		{
-			if(enemy->curHP>0)
+			if(enemy->curHP>0&&gameMode->isCursorOnEnemy)
 			{
 				FVector WorldDirection = (aimingPointLoc - this->GetActorLocation());
 				auto charRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
@@ -371,8 +371,8 @@ void AVayneCharacter::ThirdTargetAttack(AEnemy* enemy)
 				auto emitterLoc = enemy->GetMesh()->GetSocketLocation(FName("HitEffectSocket"));
 				auto emitterRot = enemy->GetMesh()->GetSocketRotation(FName("HitEffectSocket"));
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), fireFactory,startLoc, fireRot, FVector(1, 1, 1));
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, trailRot, FVector(0.3, 0.1, 0.1));
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,emitterLoc, emitterRot, FVector(2, 2, 2));		
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, charRot, FVector(0.3, 0.1, 0.1));
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,aimingPointLoc, emitterRot, FVector(2, 2, 2));		
 				PlayAnimMontage(FireMontage, 1);
 				fsm->OnDamageProcess(10);
 				enemy->OnDamaged();
