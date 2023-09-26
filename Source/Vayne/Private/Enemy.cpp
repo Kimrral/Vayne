@@ -10,6 +10,7 @@
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Vayne/VayneGameMode.h"
+#include "Vayne/VaynePlayerController.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -36,6 +37,9 @@ AEnemy::AEnemy()
 	{
 		GetMesh()->SetAnimInstanceClass(tempAnim.Class);
 	}
+
+	aimingPointer = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("aimingPointer"));
+	aimingPointer->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -49,6 +53,9 @@ void AEnemy::BeginPlay()
 	enemyAnim = Cast<UEnemyAnim>(GetMesh()->GetAnimInstance());
 	gameMode = Cast<AVayneGameMode>(GetWorld()->GetAuthGameMode());
 	enemyHPWidget = Cast<UEnemyHPWidget>(HPWidgetComponent->GetWidget());
+	PC = Cast<AVaynePlayerController>(GetWorld()->GetFirstPlayerController());
+
+	aimingPointer->SetVisibility(false);
 
 }
 
@@ -68,15 +75,25 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AEnemy::CursorOver(UPrimitiveComponent* primComp)
 {
+	if(PC)
+	{
+		PC->bShowMouseCursor=false;
+	}
 	// Outline Render
-	GetMesh()->SetRenderCustomDepth(true);	
+	GetMesh()->SetRenderCustomDepth(true);
+	aimingPointer->SetVisibility(true);
 	gameMode->isCursorOnEnemy=true;
 }
 
 void AEnemy::CursorOverEnd(UPrimitiveComponent* primComp)
 {
+	if(PC)
+	{
+		PC->bShowMouseCursor=true;
+	}
 	// Outline Render
 	GetMesh()->SetRenderCustomDepth(false);
+	aimingPointer->SetVisibility(false);
 	gameMode->isCursorOnEnemy=false;
 }
 

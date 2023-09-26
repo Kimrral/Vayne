@@ -190,6 +190,9 @@ public:
 	UPROPERTY()
 	FTimerHandle cooldownTextHandle;
 
+	UPROPERTY()
+	FVector_NetQuantize aimingPointLoc;
+
 	
 	
 

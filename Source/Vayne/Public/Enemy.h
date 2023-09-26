@@ -75,8 +75,14 @@ public:
 	UPROPERTY()
 	class UEnemyHPWidget* enemyHPWidget;
 
+	UPROPERTY(EditAnywhere, Category=EnemySettings)
+	class UStaticMeshComponent* aimingPointer;
+
 	UPROPERTY()
 	FTimerHandle HPWidgetInvisibleHandle;
+
+	UPROPERTY()
+	class AVaynePlayerController* PC;
 
 
 

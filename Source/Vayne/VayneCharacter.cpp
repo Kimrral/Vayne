@@ -78,6 +78,25 @@ void AVayneCharacter::Tick(float DeltaSeconds)
 
 	RollTimeline.TickTimeline(DeltaSeconds);
 
+	if(gameMode&&gameMode->isCursorOnEnemy)
+	{
+		FHitResult Hit;
+		bool bHitSuccessful = playerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
+		if (bHitSuccessful)
+		{
+			hitActors = Hit.GetActor();
+			if(hitActors)
+			{
+				enemyRef = Cast<AEnemy>(hitActors);
+				if(enemyRef)
+				{
+					aimingPointLoc = Hit.Location;
+					enemyRef->aimingPointer->SetWorldLocation(aimingPointLoc);
+				}
+			}
+		}
+	}
+
 }
 
 void AVayneCharacter::BeginPlay()
@@ -260,7 +279,7 @@ void AVayneCharacter::StartTargetAttack(AEnemy* enemy)
 	{
 		if(enemy->curHP>0)
 		{
-			FVector WorldDirection = (CachedEnemyLoc - this->GetActorLocation());
+			FVector WorldDirection = (aimingPointLoc - this->GetActorLocation());
 			auto charRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
 			this->SetActorRotation(FRotator(0, charRot.Yaw, 0));
 			FVector startLoc = GetMesh()->GetSocketLocation(FName("SMG_Barrel"));
@@ -269,7 +288,7 @@ void AVayneCharacter::StartTargetAttack(AEnemy* enemy)
 			float randX = FMath::FRandRange(0.f, 20.f);
 			float randY = FMath::FRandRange(0.f, 4.f);
 			float randZ = FMath::FRandRange(0.f, 4.f);
-			FRotator trailRot = GetActorRotation()+FRotator(randX, randY, randZ);
+			FRotator trailRot = GetActorRotation();//+FRotator(randX, randY, randZ);
 			FVector emitterLoc = enemy->GetMesh()->GetSocketLocation(FName("HitEffectSocket"));
 			FRotator emitterRot = enemy->GetMesh()->GetSocketRotation(FName("HitEffectSocket"));
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), fireFactory,startLoc, fireRot, FVector(1, 1, 1));
@@ -303,7 +322,7 @@ void AVayneCharacter::SecondTargetAttack(AEnemy* enemy)
 	{
 		if(enemy->curHP>0)
 		{
-			FVector WorldDirection = (CachedEnemyLoc - this->GetActorLocation());
+			FVector WorldDirection = (aimingPointLoc - this->GetActorLocation());
 			auto charRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
 			this->SetActorRotation(FRotator(0, charRot.Yaw, 0));
 			FVector startLoc = GetMesh()->GetSocketLocation(FName("SMG_Barrel"));
@@ -312,7 +331,7 @@ void AVayneCharacter::SecondTargetAttack(AEnemy* enemy)
 			float randX = FMath::FRandRange(0.f, 20.f);
 			float randY = FMath::FRandRange(0.f, 4.f);
 			float randZ = FMath::FRandRange(0.f, 4.f);
-			FRotator trailRot = GetActorRotation()+FRotator(randX, randY, randZ);
+			FRotator trailRot = GetActorRotation();//+FRotator(randX, randY, randZ);
 			auto emitterLoc = enemy->GetMesh()->GetSocketLocation(FName("HitEffectSocket"));
 			auto emitterRot = enemy->GetMesh()->GetSocketRotation(FName("HitEffectSocket"));
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), fireFactory,startLoc, fireRot, FVector(1, 1, 1));
@@ -339,7 +358,7 @@ void AVayneCharacter::ThirdTargetAttack(AEnemy* enemy)
 		{
 			if(enemy->curHP>0)
 			{
-				FVector WorldDirection = (CachedEnemyLoc - this->GetActorLocation());
+				FVector WorldDirection = (aimingPointLoc - this->GetActorLocation());
 				auto charRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
 				this->SetActorRotation(FRotator(0, charRot.Yaw, 0));
 				FVector startLoc = GetMesh()->GetSocketLocation(FName("SMG_Barrel"));
@@ -348,7 +367,7 @@ void AVayneCharacter::ThirdTargetAttack(AEnemy* enemy)
 				float randX = FMath::FRandRange(0.f, 20.f);
 				float randY = FMath::FRandRange(0.f, 4.f);
 				float randZ = FMath::FRandRange(0.f, 4.f);
-				FRotator trailRot = GetActorRotation()+FRotator(randX, randY, randZ);
+				FRotator trailRot = GetActorRotation();//+FRotator(randX, randY, randZ);
 				auto emitterLoc = enemy->GetMesh()->GetSocketLocation(FName("HitEffectSocket"));
 				auto emitterRot = enemy->GetMesh()->GetSocketRotation(FName("HitEffectSocket"));
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), fireFactory,startLoc, fireRot, FVector(1, 1, 1));
