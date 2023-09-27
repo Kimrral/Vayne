@@ -292,7 +292,7 @@ void AVayneCharacter::StartTargetAttack(AEnemy* enemy)
 			FVector emitterLoc = enemy->GetMesh()->GetSocketLocation(FName("HitEffectSocket"));
 			FRotator emitterRot = enemy->GetMesh()->GetSocketRotation(FName("HitEffectSocket"));
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), fireFactory,startLoc, fireRot, FVector(1, 1, 1));
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, charRot, FVector(0.3, 0.1, 0.1));
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, charRot, FVector(0.2, 0.1, 0.1));
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,aimingPointLoc, emitterRot, FVector(2, 2, 2));		
 			PlayAnimMontage(FireMontage, 1);
 			fsm->OnDamageProcess(10);
@@ -335,7 +335,7 @@ void AVayneCharacter::SecondTargetAttack(AEnemy* enemy)
 			auto emitterLoc = enemy->GetMesh()->GetSocketLocation(FName("HitEffectSocket"));
 			auto emitterRot = enemy->GetMesh()->GetSocketRotation(FName("HitEffectSocket"));
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), fireFactory,startLoc, fireRot, FVector(1, 1, 1));
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, charRot, FVector(0.3, 0.1, 0.1));
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, charRot, FVector(0.2, 0.1, 0.1));
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,aimingPointLoc, emitterRot, FVector(2, 2, 2));		
 			PlayAnimMontage(FireMontage, 1);
 			fsm->OnDamageProcess(10);
@@ -371,7 +371,7 @@ void AVayneCharacter::ThirdTargetAttack(AEnemy* enemy)
 				auto emitterLoc = enemy->GetMesh()->GetSocketLocation(FName("HitEffectSocket"));
 				auto emitterRot = enemy->GetMesh()->GetSocketRotation(FName("HitEffectSocket"));
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), fireFactory,startLoc, fireRot, FVector(1, 1, 1));
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, charRot, FVector(0.3, 0.1, 0.1));
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, charRot, FVector(0.2, 0.1, 0.1));
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,aimingPointLoc, emitterRot, FVector(2, 2, 2));		
 				PlayAnimMontage(FireMontage, 1);
 				fsm->OnDamageProcess(10);
