@@ -75,28 +75,31 @@ AVayneCharacter::AVayneCharacter()
 void AVayneCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
-
+    // Timeline Tick Setting
 	RollTimeline.TickTimeline(DeltaSeconds);
-
+	// 마우스 커서가 적 위에 위치해 있다면
 	if(gameMode&&gameMode->isCursorOnEnemy)
 	{
 		FHitResult Hit;
+		// 커서 충돌 결과값 도출
 		bool bHitSuccessful = playerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
 		if (bHitSuccessful)
 		{
 			hitActors = Hit.GetActor();
 			if(hitActors)
 			{
+				// Enemy Casting
 				enemyRef = Cast<AEnemy>(hitActors);
 				if(enemyRef)
 				{
+					// Aiming Point Vector값 도출 및 전역변수에 캐싱
 					aimingPointLoc = Hit.Location;
+					// Aiming Point Location 설정
 					enemyRef->aimingPointer->SetWorldLocation(aimingPointLoc);
 				}
 			}
 		}
 	}
-
 }
 
 void AVayneCharacter::BeginPlay()
@@ -272,37 +275,47 @@ void AVayneCharacter::OffAttackMode()
 	bAttackMode=false;
 }
 
+// Targeting Attack Begin
 void AVayneCharacter::StartTargetAttack(AEnemy* enemy)
 {
+	// Enemy FSM Casting
 	UEnemyFSM* fsm = Cast<UEnemyFSM>(enemy->GetDefaultSubobjectByName(FName("enemyFSM")));
 	if(fsm&&enemy)
 	{
+		// Enemy HP가 0이 아니면서 커서가 Enemy에 위치해 있다면
 		if(enemy->curHP>0&&gameMode->isCursorOnEnemy)
 		{
+			// 전역변수에 캐싱한 Location값 기준으로 Target - Me
 			FVector WorldDirection = (aimingPointLoc - this->GetActorLocation());
-			auto charRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
+			// MakeRotFromXZ를 통한 Rotator값 생성
+			FRotator charRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
+			// Attack Begin 시 적을 바라보도록 Yaw Rotator 설정
 			this->SetActorRotation(FRotator(0, charRot.Yaw, 0));
+			// Weapon Socket Location
 			FVector startLoc = GetMesh()->GetSocketLocation(FName("SMG_Barrel"));
-			FVector backFlashLoc = startLoc+GetActorForwardVector()*300.0f;
+			// Weapon Socket Rotation
 			FRotator fireRot = GetMesh()->GetSocketRotation("SMG_Barrel");
-			float randX = FMath::FRandRange(0.f, 20.f);
-			float randY = FMath::FRandRange(0.f, 4.f);
-			float randZ = FMath::FRandRange(0.f, 4.f);
-			FRotator trailRot = GetActorRotation();//+FRotator(randX, randY, randZ);
-			FVector emitterLoc = enemy->GetMesh()->GetSocketLocation(FName("HitEffectSocket"));
+			// Hit Effect Socket Rotation
 			FRotator emitterRot = enemy->GetMesh()->GetSocketRotation(FName("HitEffectSocket"));
+			// Emitter Spawn
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), fireFactory,startLoc, fireRot, FVector(1, 1, 1));
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, charRot, FVector(0.2, 0.1, 0.1));
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,aimingPointLoc, emitterRot, FVector(2, 2, 2));		
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,aimingPointLoc, emitterRot, FVector(2, 2, 2));
+			// Fire Animation Montage 재생
 			PlayAnimMontage(FireMontage, 1);
+			// FSM에 있는 Damage Process 호출
 			fsm->OnDamageProcess(10);
+			// Enemy에 있는 Damaged Montage 함수 호출
 			enemy->OnDamaged();
 			AttackCircle->SetVisibility(false);
 			AttackCirclePlane->SetVisibility(false);
+			// 두 번째 점사 공격 Timer Delegate 생성, 예약
 			FTimerDelegate secondAttackDelegate = FTimerDelegate::CreateUObject( this, &AVayneCharacter::SecondTargetAttack, enemy);
 			GetWorldTimerManager().SetTimer(burstHandle, secondAttackDelegate, 0.07f, false);
+			// 세 번째 점사 공격 Timer Delegate 생성, 예약
 			FTimerDelegate thirdAttackDelegate = FTimerDelegate::CreateUObject( this, &AVayneCharacter::ThirdTargetAttack, enemy);
 			GetWorldTimerManager().SetTimer(burstHandle2nd, thirdAttackDelegate, 0.14f, false);
+			// Disable Attack Mode With Timer
 			GetWorldTimerManager().SetTimer(attackModeHandle, this, &AVayneCharacter::OffAttackMode, 3.0, false);
 		}
 		else
