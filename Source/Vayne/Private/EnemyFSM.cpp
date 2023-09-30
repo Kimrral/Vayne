@@ -104,6 +104,7 @@ void UEnemyFSM::TickMove()
 
 void UEnemyFSM::TickAttack()
 {
+	// curTime에 DeltaTime 누적
 	curTime+=GetWorld()->DeltaTimeSeconds;
 	if(!bIsAttacking&&curTime>=0.1f)
 	{
@@ -184,7 +185,7 @@ void UEnemyFSM::OnDamageProcess(int damageValue)
 	}
 	UE_LOG(LogTemp, Warning, TEXT("Enemy HP : %d"), me->curHP);}
 
-void UEnemyFSM::SetState(EEnemyState next)
+void UEnemyFSM::SetState(EEnemyState next) // 상태 전이함수
 {
 	state=next;
 	me->enemyAnim->state=next;
