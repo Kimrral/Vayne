@@ -96,7 +96,7 @@ void AVaynePlayerController::SetupInputComponent()
 		// Fire input events
 		EnhancedInputComponent->BindAction(IA_Fire, ETriggerEvent::Started, this, &AVaynePlayerController::OnFire);
 		EnhancedInputComponent->BindAction(IA_Fire, ETriggerEvent::Completed, this, &AVaynePlayerController::OnFireReleased);
-		EnhancedInputComponent->BindAction(IA_Fire, ETriggerEvent::Triggered, this, &AVaynePlayerController::Turn);
+		EnhancedInputComponent->BindAction(IA_CamTurn, ETriggerEvent::Triggered, this, &AVaynePlayerController::Turn);
 
 
 		// Cam Zoom input events
@@ -288,8 +288,6 @@ void AVaynePlayerController::MovementReenable()
 
 void AVaynePlayerController::Turn()
 {
-	if(PlayerChar->isAPressed==false)
-	{
-		PlayerChar->CameraBoom->AddRelativeRotation(FRotator(0, AxisValue*0.7, 0));
-	}
+	if(PlayerChar)
+	PlayerChar->CameraBoom->AddRelativeRotation(FRotator(0, AxisValue*0.7, 0));
 }

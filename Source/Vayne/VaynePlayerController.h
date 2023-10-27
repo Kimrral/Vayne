@@ -68,6 +68,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputAction* IA_Tab;
 
+	// Cam Turn
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	class UInputAction* IA_CamTurn;
+
 	// Player Character Casting
 	UPROPERTY()
 	class AVayneCharacter* PlayerChar;

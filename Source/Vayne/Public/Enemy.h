@@ -33,6 +33,12 @@ public:
 	UFUNCTION()
 	void CursorOverEnd(UPrimitiveComponent* primComp);
 
+	// Headshot Function
+	UFUNCTION()
+	void HeadCursorOver(UPrimitiveComponent* primComp);
+	UFUNCTION()
+	void HeadCursorOverEnd(UPrimitiveComponent* primComp);
+
 	UPROPERTY()
 	class AVayneGameMode* gameMode;
 
@@ -84,7 +90,11 @@ public:
 	UPROPERTY()
 	class AVaynePlayerController* PC;
 
+	UPROPERTY(EditAnywhere, Category=EnemySettings)
+	class UMaterialInterface* M_aimingPointer;
 
+	UPROPERTY(EditAnywhere, Category=EnemySettings)
+	class UMaterialInterface* M_aimingPointerHead;
 
 
 };

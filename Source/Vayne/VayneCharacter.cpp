@@ -86,6 +86,7 @@ void AVayneCharacter::Tick(float DeltaSeconds)
 		if (bHitSuccessful)
 		{
 			hitActors = Hit.GetActor();
+			auto hitBone = Hit.BoneName;
 			if(hitActors)
 			{
 				// Enemy Casting
@@ -96,6 +97,10 @@ void AVayneCharacter::Tick(float DeltaSeconds)
 					aimingPointLoc = Hit.Location;
 					// Aiming Point Location 설정
 					enemyRef->aimingPointer->SetWorldLocation(aimingPointLoc);
+					if(hitBone==FName("head"))
+					{
+						UE_LOG(LogTemp, Warning, TEXT("head"))
+					}
 				}
 			}
 		}
@@ -127,12 +132,9 @@ void AVayneCharacter::BeginPlay()
 
 void AVayneCharacter::FireInput()
 {
-	// A키와 함께 인풋이 들어왔다면
-	if(isAPressed)
+	// 마우스 커서가 적 위에 놓여있다면
+	if(gameMode&&gameMode->isCursorOnEnemy==true)
 	{
-		// 마우스 커서가 적 위에 놓여있다면
-		if(gameMode->isCursorOnEnemy==true)
-		{
 			bAttackMode = true;
 			GetWorldTimerManager().ClearTimer(attackDelayHandle);
 			GetWorldTimerManager().ClearTimer(attackModeHandle);
@@ -141,81 +143,69 @@ void AVayneCharacter::FireInput()
 			bool bHitSuccessful = playerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
 			if (bHitSuccessful)
 			{
-				hitActors = Hit.GetActor();
-				if(hitActors)
+			hitActors = Hit.GetActor();
+			if(hitActors)
+			{
+				enemyRef = Cast<AEnemy>(hitActors);
+				if(enemyRef&&enemyRef->curHP>0)
 				{
-					enemyRef = Cast<AEnemy>(hitActors);
-					if(enemyRef&&enemyRef->curHP>0)
+					CachedEnemyLoc=enemyRef->GetActorLocation();
+					enemyDist = this->GetDistanceTo(enemyRef);
+					// 캐스팅한 적이 공격 가능한 범위에 있다면
+					if(enemyDist<=attackRange)
 					{
-						CachedEnemyLoc=enemyRef->GetActorLocation();
-						enemyDist = this->GetDistanceTo(enemyRef);
-						// 캐스팅한 적이 공격 가능한 범위에 있다면
-						if(enemyDist<=attackRange)
+						// 다른 몽타주가 재생되고 있지 않다면
+						bool isMontagePlaying = GetMesh()->GetAnimInstance()->IsAnyMontagePlaying();
+						if(!isMontagePlaying)
 						{
-							// 다른 몽타주가 재생되고 있지 않다면
-							bool isMontagePlaying = GetMesh()->GetAnimInstance()->IsAnyMontagePlaying();
-							if(!isMontagePlaying)
-							{
-								// 타겟 공격 프로세스 수행
-								StartTargetAttack(enemyRef);
-								// 점사 공격 타이머 설정
-								FTimerDelegate attackDelegate = FTimerDelegate::CreateUObject( this, &AVayneCharacter::StartTargetAttack, enemyRef);
-								GetWorldTimerManager().SetTimer(attackDelayHandle, attackDelegate, attackDelay, true);
-							}
-						}
-						// 캐스팅한 적이 공격 가능 범위 내에 있지 않다면
-						else
-						{
-							bIsNotAttackableRange=true;
-							auto targetLoc = (enemyRef->GetActorLocation()-this->GetActorLocation()).GetSafeNormal();
-							// Enemy 상태머신 캐스팅
-							UEnemyFSM* fsm = Cast<UEnemyFSM>(enemyRef->GetDefaultSubobjectByName(FName("enemyFSM")));
-							if(fsm)
-							{
-								// 적 위치를 기반으로 캐릭터 회전 Yaw값 설정
-								FVector WorldDirection = (enemyRef->GetActorLocation() - GetActorLocation());
-								auto charRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, GetActorUpVector());
-								SetActorRotation(FRotator(0, charRot.Yaw, 0));	
-							}
-							// 캐치된 적 위치로 이동
-							AddMovementInput(targetLoc, 1, false);
-							UAIBlueprintHelperLibrary::SimpleMoveToLocation(playerController, CachedEnemyLoc);
+							// 타겟 공격 프로세스 수행
+							StartTargetAttack(enemyRef);
+							// 점사 공격 타이머 설정
+							FTimerDelegate attackDelegate = FTimerDelegate::CreateUObject( this, &AVayneCharacter::StartTargetAttack, enemyRef);
+							GetWorldTimerManager().SetTimer(attackDelayHandle, attackDelegate, attackDelay, true);
 						}
 					}
-				}				
+					// 캐스팅한 적이 공격 가능 범위 내에 있지 않다면
+					else
+					{
+						bIsNotAttackableRange=true;
+						auto targetLoc = (enemyRef->GetActorLocation()-this->GetActorLocation()).GetSafeNormal();
+						// Enemy 상태머신 캐스팅
+						UEnemyFSM* fsm = Cast<UEnemyFSM>(enemyRef->GetDefaultSubobjectByName(FName("enemyFSM")));
+						if(fsm)
+						{
+							// 적 위치를 기반으로 캐릭터 회전 Yaw값 설정
+							FVector WorldDirection = (enemyRef->GetActorLocation() - GetActorLocation());
+							auto charRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, GetActorUpVector());
+							SetActorRotation(FRotator(0, charRot.Yaw, 0));	
+						}
+						// 캐치된 적 위치로 이동
+						AddMovementInput(targetLoc, 1, false);
+						UAIBlueprintHelperLibrary::SimpleMoveToLocation(playerController, CachedEnemyLoc);
+					}
+				}
 			}
 		}
-		// if Cursor is not on Enemy
-		else
-		{
-		}
 	}
-	// if A is not Pressed
+	// if Cursor is not on Enemy
 	else
 	{
+		
 	}
 }
 
 void AVayneCharacter::FireInputReleased()
 {
-	if(isAPressed)
+	if(gameMode->isCursorOnEnemy)
 	{
-		if(gameMode->isCursorOnEnemy)
+		if(bIsNotAttackableRange)
 		{
-			if(bIsNotAttackableRange)
-			{
-				UAIBlueprintHelperLibrary::SimpleMoveToLocation(playerController, CachedEnemyLoc);
-			}
-		}
-		else
-		{
-			playerController->OnSetDestinationReleased();
+			UAIBlueprintHelperLibrary::SimpleMoveToLocation(playerController, CachedEnemyLoc);
 		}
 	}
-	// if A is not Pressed
 	else
 	{
-		
+		playerController->OnSetDestinationReleased();
 	}
 }
 
@@ -304,7 +294,14 @@ void AVayneCharacter::StartTargetAttack(AEnemy* enemy)
 			// Fire Animation Montage 재생
 			PlayAnimMontage(FireMontage, 1);
 			// FSM에 있는 Damage Process 호출
-			fsm->OnDamageProcess(10);
+			if(gameMode->isCursorOnEnemyHead)
+			{
+				fsm->OnDamageProcess(20);
+			}
+			else
+			{
+				fsm->OnDamageProcess(10);
+			}			
 			// Enemy에 있는 Damaged Montage 함수 호출
 			enemy->OnDamaged();
 			AttackCircle->SetVisibility(false);
@@ -351,7 +348,15 @@ void AVayneCharacter::SecondTargetAttack(AEnemy* enemy)
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, charRot, FVector(0.2, 0.1, 0.1));
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,aimingPointLoc, emitterRot, FVector(2, 2, 2));		
 			PlayAnimMontage(FireMontage, 1);
-			fsm->OnDamageProcess(10);
+			// FSM에 있는 Damage Process 호출
+			if(gameMode->isCursorOnEnemyHead)
+			{
+				fsm->OnDamageProcess(20);
+			}
+			else
+			{
+				fsm->OnDamageProcess(10);
+			}			
 			enemy->OnDamaged();
 		}
 		else
@@ -387,7 +392,15 @@ void AVayneCharacter::ThirdTargetAttack(AEnemy* enemy)
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, charRot, FVector(0.2, 0.1, 0.1));
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,aimingPointLoc, emitterRot, FVector(2, 2, 2));		
 				PlayAnimMontage(FireMontage, 1);
-				fsm->OnDamageProcess(10);
+				// FSM에 있는 Damage Process 호출
+				if(gameMode->isCursorOnEnemyHead)
+				{
+					fsm->OnDamageProcess(20);
+				}
+				else
+				{
+					fsm->OnDamageProcess(10);
+				}			
 				enemy->OnDamaged();
 			}
 			else

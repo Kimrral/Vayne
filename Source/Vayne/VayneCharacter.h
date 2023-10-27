@@ -118,7 +118,7 @@ public:
 	FTimerHandle attackModeHandle;
 
 	UPROPERTY(EditAnywhere, Category=Settings)
-	float attackRange = 550.0f;
+	float attackRange = 1300.0f;
 
 	UPROPERTY()
 	float isMovingToAttackRange=false;
@@ -193,6 +193,8 @@ public:
 	UPROPERTY()
 	FVector_NetQuantize aimingPointLoc;
 
+	UPROPERTY()
+	UPrimitiveComponent* hitComp;
 	
 	
 

@@ -18,6 +18,9 @@ public:
 	bool isCursorOnEnemy = false;
 
 	UPROPERTY()
+	bool isCursorOnEnemyHead = false;
+
+	UPROPERTY()
 	bool isCursorOnInteractibleActor = false;
 };
 

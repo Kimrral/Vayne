@@ -7,6 +7,7 @@
 #include "EnemyFSM.h"
 #include "EnemyHPWidget.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Vayne/VayneGameMode.h"
@@ -38,8 +39,9 @@ AEnemy::AEnemy()
 		GetMesh()->SetAnimInstanceClass(tempAnim.Class);
 	}
 
+	// Aiming Pointer Setup
 	aimingPointer = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("aimingPointer"));
-	aimingPointer->SetupAttachment(RootComponent);
+	aimingPointer->SetupAttachment(RootComponent);	
 }
 
 // Called when the game starts or when spawned
@@ -95,6 +97,20 @@ void AEnemy::CursorOverEnd(UPrimitiveComponent* primComp)
 	GetMesh()->SetRenderCustomDepth(false);
 	aimingPointer->SetVisibility(false);
 	gameMode->isCursorOnEnemy=false;
+}
+
+void AEnemy::HeadCursorOver(UPrimitiveComponent* primComp)
+{
+	gameMode->isCursorOnEnemyHead=true;
+	aimingPointer->SetMaterial(0, M_aimingPointerHead);
+	UE_LOG(LogTemp, Warning, TEXT("Head on"))
+}
+
+void AEnemy::HeadCursorOverEnd(UPrimitiveComponent* primComp)
+{
+	gameMode->isCursorOnEnemyHead=false;
+	aimingPointer->SetMaterial(0, M_aimingPointer);
+	UE_LOG(LogTemp, Warning, TEXT("Head off"))
 }
 
 void AEnemy::Move()
