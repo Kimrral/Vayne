@@ -58,6 +58,9 @@ public:
 	void OnDamaged();
 
 	UFUNCTION()
+	void OnHeadDamaged();
+
+	UFUNCTION()
 	void OnDestroy();
 
 	UFUNCTION()

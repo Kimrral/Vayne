@@ -93,14 +93,11 @@ void AVayneCharacter::Tick(float DeltaSeconds)
 				enemyRef = Cast<AEnemy>(hitActors);
 				if(enemyRef)
 				{
+					bHead=false;
 					// Aiming Point Vector값 도출 및 전역변수에 캐싱
 					aimingPointLoc = Hit.Location;
 					// Aiming Point Location 설정
 					enemyRef->aimingPointer->SetWorldLocation(aimingPointLoc);
-					if(hitBone==FName("head"))
-					{
-						UE_LOG(LogTemp, Warning, TEXT("head"))
-					}
 				}
 			}
 		}
@@ -293,17 +290,28 @@ void AVayneCharacter::StartTargetAttack(AEnemy* enemy)
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,aimingPointLoc, emitterRot, FVector(2, 2, 2));
 			// Fire Animation Montage 재생
 			PlayAnimMontage(FireMontage, 1);
-			// FSM에 있는 Damage Process 호출
-			if(gameMode->isCursorOnEnemyHead)
+			FHitResult Hit;
+			// 커서 충돌 결과값 도출
+			bool bHitSuccessful = playerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
+			if (bHitSuccessful)
 			{
-				fsm->OnDamageProcess(20);
-			}
-			else
-			{
-				fsm->OnDamageProcess(10);
-			}			
-			// Enemy에 있는 Damaged Montage 함수 호출
-			enemy->OnDamaged();
+				hitActors = Hit.GetActor();
+				auto hitBone = Hit.BoneName;
+				if(hitBone==FName("head"))
+				{
+					// FSM에 있는 Damage Process 호출		
+					fsm->OnDamageProcess(20);
+					// 헤드 적중 데미지 프로세스 호출
+					enemy->OnHeadDamaged();
+				}
+				else
+				{
+					// FSM에 있는 Damage Process 호출		
+					fsm->OnDamageProcess(10);
+					// 일반 적중 데미지 프로세스 호출
+					enemy->OnDamaged();
+				}
+			}					
 			AttackCircle->SetVisibility(false);
 			AttackCirclePlane->SetVisibility(false);
 			// 두 번째 점사 공격 Timer Delegate 생성, 예약
@@ -348,16 +356,30 @@ void AVayneCharacter::SecondTargetAttack(AEnemy* enemy)
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, charRot, FVector(0.2, 0.1, 0.1));
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,aimingPointLoc, emitterRot, FVector(2, 2, 2));		
 			PlayAnimMontage(FireMontage, 1);
-			// FSM에 있는 Damage Process 호출
-			if(gameMode->isCursorOnEnemyHead)
+			FHitResult Hit;
+			// 커서 충돌 결과값 도출
+			bool bHitSuccessful = playerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
+			if (bHitSuccessful)
 			{
-				fsm->OnDamageProcess(20);
-			}
-			else
-			{
-				fsm->OnDamageProcess(10);
-			}			
-			enemy->OnDamaged();
+				hitActors = Hit.GetActor();
+				auto hitBone = Hit.BoneName;
+				// 헤드에 적중했다면
+				if(hitBone==FName("head"))
+				{
+					// FSM에 있는 Damage Process 호출		
+					fsm->OnDamageProcess(20);
+					// 헤드 적중 데미지 프로세스 호출
+					enemy->OnHeadDamaged();
+					UE_LOG(LogTemp, Warning, TEXT("headshot"))
+				}
+				else
+				{
+					// FSM에 있는 Damage Process 호출		
+					fsm->OnDamageProcess(10);
+					// 일반 적중 데미지 프로세스 호출
+					enemy->OnDamaged();
+				}
+			}		
 		}
 		else
 		{
@@ -392,16 +414,29 @@ void AVayneCharacter::ThirdTargetAttack(AEnemy* enemy)
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, charRot, FVector(0.2, 0.1, 0.1));
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,aimingPointLoc, emitterRot, FVector(2, 2, 2));		
 				PlayAnimMontage(FireMontage, 1);
-				// FSM에 있는 Damage Process 호출
-				if(gameMode->isCursorOnEnemyHead)
+				FHitResult Hit;
+				// 커서 충돌 결과값 도출
+				bool bHitSuccessful = playerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
+				if (bHitSuccessful)
 				{
-					fsm->OnDamageProcess(20);
-				}
-				else
-				{
-					fsm->OnDamageProcess(10);
+					hitActors = Hit.GetActor();
+					auto hitBone = Hit.BoneName;
+					// 헤드에 적중했다면
+					if(hitBone==FName("head"))
+					{
+						// FSM에 있는 Damage Process 호출		
+						fsm->OnDamageProcess(20);
+						// 헤드 적중 데미지 프로세스 호출
+						enemy->OnHeadDamaged();
+					}
+					else
+					{
+						// FSM에 있는 Damage Process 호출		
+						fsm->OnDamageProcess(10);
+						// 일반 적중 데미지 프로세스 호출
+						enemy->OnDamaged();
+					}
 				}			
-				enemy->OnDamaged();
 			}
 			else
 			{

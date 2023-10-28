@@ -118,7 +118,7 @@ public:
 	FTimerHandle attackModeHandle;
 
 	UPROPERTY(EditAnywhere, Category=Settings)
-	float attackRange = 1300.0f;
+	float attackRange = 1200.0f;
 
 	UPROPERTY()
 	float isMovingToAttackRange=false;
@@ -195,6 +195,9 @@ public:
 
 	UPROPERTY()
 	UPrimitiveComponent* hitComp;
+
+	UPROPERTY()
+	bool bHead = false;
 	
 	
 

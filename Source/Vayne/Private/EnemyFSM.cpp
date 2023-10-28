@@ -143,8 +143,8 @@ void UEnemyFSM::TickAttack()
 void UEnemyFSM::TickDamage()
 {
 	curTime+=GetWorld()->GetDeltaSeconds();
-	// Damage 상태로 전이하고 1.5초가 경과하면
-	if(curTime>1.5f)
+	// Damage 상태로 전이하고 1.0초가 경과하면
+	if(curTime>0.0f)
 	{
 		// Move 상태로 전이한다.
 		SetState(EEnemyState::MOVE);

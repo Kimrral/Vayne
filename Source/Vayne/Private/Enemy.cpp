@@ -41,7 +41,8 @@ AEnemy::AEnemy()
 
 	// Aiming Pointer Setup
 	aimingPointer = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("aimingPointer"));
-	aimingPointer->SetupAttachment(RootComponent);	
+	aimingPointer->SetupAttachment(RootComponent);
+	
 }
 
 // Called when the game starts or when spawned
@@ -131,6 +132,17 @@ void AEnemy::OnDie()
 }
 
 void AEnemy::OnDamaged()
+{
+	FTimerHandle overlayMatHandle;
+	GetMesh()->SetOverlayMaterial(overlayMatRed);
+	GetWorldTimerManager().ClearTimer(overlayMatHandle);
+	GetWorldTimerManager().SetTimer(overlayMatHandle, FTimerDelegate::CreateLambda([this]()->void
+	{
+		GetMesh()->SetOverlayMaterial(nullptr);
+	}), 0.3f, false);
+}
+
+void AEnemy::OnHeadDamaged()
 {
 	FTimerHandle overlayMatHandle;
 	GetController()->StopMovement();
