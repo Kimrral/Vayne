@@ -7,7 +7,6 @@
 #include "EnemyFSM.h"
 #include "EnemyHPWidget.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Vayne/VayneGameMode.h"
@@ -59,7 +58,6 @@ void AEnemy::BeginPlay()
 	PC = Cast<AVaynePlayerController>(GetWorld()->GetFirstPlayerController());
 
 	aimingPointer->SetVisibility(false);
-
 }
 
 // Called every frame
@@ -117,7 +115,6 @@ void AEnemy::HeadCursorOverEnd(UPrimitiveComponent* primComp)
 void AEnemy::Move()
 {
 }
-
 
 
 void AEnemy::OnDie()

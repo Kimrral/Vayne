@@ -32,6 +32,9 @@ public:
 
 	UFUNCTION()
 	void AnimNotify_DieEnd();
+
+	UFUNCTION()
+	bool IsAttackAnimationPlaying();
 	
 	// Casting 변수를 전역변수로 선언한다.
 	UPROPERTY()
@@ -39,5 +42,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bIsAttacking;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bIsAttackingAnim; // false
+
+	
 	
 };

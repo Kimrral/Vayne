@@ -174,6 +174,8 @@ public:
 	UFUNCTION()
 	void RollingEnable();
 
+	UFUNCTION()
+	void EnemyHPWidgetSettings(AEnemy* enemy);
 
 	UPROPERTY()
 	float rollingCooltime = 5.0f;

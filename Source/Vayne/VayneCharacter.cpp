@@ -280,17 +280,19 @@ void AVayneCharacter::StartTargetAttack(AEnemy* enemy)
 			this->SetActorRotation(FRotator(0, charRot.Yaw, 0));
 			// Weapon Socket Location
 			FVector startLoc = GetMesh()->GetSocketLocation(FName("SMG_Barrel"));
+			FVector backFlashLoc = startLoc+GetActorForwardVector()*20.0f;
 			// Weapon Socket Rotation
 			FRotator fireRot = GetMesh()->GetSocketRotation("SMG_Barrel");
 			// Hit Effect Socket Rotation
 			FRotator emitterRot = enemy->GetMesh()->GetSocketRotation(FName("HitEffectSocket"));
 			// Emitter Spawn
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), fireFactory,startLoc, fireRot, FVector(1, 1, 1));
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, charRot, FVector(0.2, 0.1, 0.1));
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,aimingPointLoc, emitterRot, FVector(2, 2, 2));
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,backFlashLoc, charRot, FVector(0.2, 0.1, 0.1));
 			// Fire Animation Montage 재생
 			PlayAnimMontage(FireMontage, 1);
 			FHitResult Hit;
+			// Enemy HP Widget Settings
+			EnemyHPWidgetSettings(enemy);
 			// 커서 충돌 결과값 도출
 			bool bHitSuccessful = playerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
 			if (bHitSuccessful)
@@ -299,15 +301,17 @@ void AVayneCharacter::StartTargetAttack(AEnemy* enemy)
 				auto hitBone = Hit.BoneName;
 				if(hitBone==FName("head"))
 				{
+					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,aimingPointLoc, emitterRot, FVector(3));
 					// FSM에 있는 Damage Process 호출		
-					fsm->OnDamageProcess(20);
+					fsm->OnDamageProcess(10);
 					// 헤드 적중 데미지 프로세스 호출
 					enemy->OnHeadDamaged();
 				}
 				else
 				{
+					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,aimingPointLoc, emitterRot, FVector(1.3));
 					// FSM에 있는 Damage Process 호출		
-					fsm->OnDamageProcess(10);
+					fsm->OnDamageProcess(5);
 					// 일반 적중 데미지 프로세스 호출
 					enemy->OnDamaged();
 				}
@@ -344,7 +348,7 @@ void AVayneCharacter::SecondTargetAttack(AEnemy* enemy)
 			auto charRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
 			this->SetActorRotation(FRotator(0, charRot.Yaw, 0));
 			FVector startLoc = GetMesh()->GetSocketLocation(FName("SMG_Barrel"));
-			FVector backFlashLoc = startLoc+GetActorForwardVector()*300.0f;
+			FVector backFlashLoc = startLoc+GetActorForwardVector()*20.0f;
 			FRotator fireRot = GetMesh()->GetSocketRotation("SMG_Barrel");
 			float randX = FMath::FRandRange(0.f, 20.f);
 			float randY = FMath::FRandRange(0.f, 4.f);
@@ -353,10 +357,11 @@ void AVayneCharacter::SecondTargetAttack(AEnemy* enemy)
 			auto emitterLoc = enemy->GetMesh()->GetSocketLocation(FName("HitEffectSocket"));
 			auto emitterRot = enemy->GetMesh()->GetSocketRotation(FName("HitEffectSocket"));
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), fireFactory,startLoc, fireRot, FVector(1, 1, 1));
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, charRot, FVector(0.2, 0.1, 0.1));
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,aimingPointLoc, emitterRot, FVector(2, 2, 2));		
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,backFlashLoc, charRot, FVector(0.2, 0.1, 0.1));
 			PlayAnimMontage(FireMontage, 1);
 			FHitResult Hit;
+			// Enemy HP Widget Settings
+			EnemyHPWidgetSettings(enemy);
 			// 커서 충돌 결과값 도출
 			bool bHitSuccessful = playerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
 			if (bHitSuccessful)
@@ -366,16 +371,18 @@ void AVayneCharacter::SecondTargetAttack(AEnemy* enemy)
 				// 헤드에 적중했다면
 				if(hitBone==FName("head"))
 				{
+					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,aimingPointLoc, emitterRot, FVector(3));		
+
 					// FSM에 있는 Damage Process 호출		
-					fsm->OnDamageProcess(20);
+					fsm->OnDamageProcess(10);
 					// 헤드 적중 데미지 프로세스 호출
 					enemy->OnHeadDamaged();
-					UE_LOG(LogTemp, Warning, TEXT("headshot"))
 				}
 				else
 				{
+					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,aimingPointLoc, emitterRot, FVector(1.3));		
 					// FSM에 있는 Damage Process 호출		
-					fsm->OnDamageProcess(10);
+					fsm->OnDamageProcess(5);
 					// 일반 적중 데미지 프로세스 호출
 					enemy->OnDamaged();
 				}
@@ -402,7 +409,7 @@ void AVayneCharacter::ThirdTargetAttack(AEnemy* enemy)
 				auto charRot = UKismetMathLibrary::MakeRotFromXZ(WorldDirection, this->GetActorUpVector());
 				this->SetActorRotation(FRotator(0, charRot.Yaw, 0));
 				FVector startLoc = GetMesh()->GetSocketLocation(FName("SMG_Barrel"));
-				FVector backFlashLoc = startLoc+GetActorForwardVector()*300.0f;
+				FVector backFlashLoc = startLoc+GetActorForwardVector()*20.0f;
 				FRotator fireRot = GetMesh()->GetSocketRotation("SMG_Barrel");
 				float randX = FMath::FRandRange(0.f, 20.f);
 				float randY = FMath::FRandRange(0.f, 4.f);
@@ -411,10 +418,11 @@ void AVayneCharacter::ThirdTargetAttack(AEnemy* enemy)
 				auto emitterLoc = enemy->GetMesh()->GetSocketLocation(FName("HitEffectSocket"));
 				auto emitterRot = enemy->GetMesh()->GetSocketRotation(FName("HitEffectSocket"));
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), fireFactory,startLoc, fireRot, FVector(1, 1, 1));
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,startLoc, charRot, FVector(0.2, 0.1, 0.1));
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,aimingPointLoc, emitterRot, FVector(2, 2, 2));		
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletTrailFactory2,backFlashLoc, charRot, FVector(0.2, 0.1, 0.1));
 				PlayAnimMontage(FireMontage, 1);
 				FHitResult Hit;
+				// Enemy HP Widget Settings
+				EnemyHPWidgetSettings(enemy);
 				// 커서 충돌 결과값 도출
 				bool bHitSuccessful = playerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
 				if (bHitSuccessful)
@@ -424,19 +432,21 @@ void AVayneCharacter::ThirdTargetAttack(AEnemy* enemy)
 					// 헤드에 적중했다면
 					if(hitBone==FName("head"))
 					{
+						UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,aimingPointLoc, emitterRot, FVector(3));		
 						// FSM에 있는 Damage Process 호출		
-						fsm->OnDamageProcess(20);
+						fsm->OnDamageProcess(10);
 						// 헤드 적중 데미지 프로세스 호출
 						enemy->OnHeadDamaged();
 					}
 					else
 					{
+						UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletImpactFactory,aimingPointLoc, emitterRot, FVector(1.3));		
 						// FSM에 있는 Damage Process 호출		
-						fsm->OnDamageProcess(10);
+						fsm->OnDamageProcess(5);
 						// 일반 적중 데미지 프로세스 호출
 						enemy->OnDamaged();
 					}
-				}			
+				}
 			}
 			else
 			{
@@ -449,60 +459,10 @@ void AVayneCharacter::ThirdTargetAttack(AEnemy* enemy)
 
 void AVayneCharacter::OnOverlapEnemy(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if(OtherActor)
-	{
-		AEnemy* hpWidgetEnemy = Cast<AEnemy>(OtherActor);
-		if(hpWidgetEnemy)
-		{
-			GetWorldTimerManager().ClearTimer(hpWidgetEnemy->HPWidgetInvisibleHandle);
-			hpWidgetEnemy->enemyHPWidget->HPdynamicMat->SetScalarParameterValue(FName("HPAlpha"), hpWidgetEnemy->curHP*0.01-0.001);
-			hpWidgetEnemy->HPWidgetComponent->SetVisibility(true);
-		}
-	}
-	TArray<FHitResult> hits;
-	if(SweepResult.GetNumOverlapHits(hits)>1)
-	{
-		FVector Center = AttackCirclePlane->GetComponentLocation();
-		int32 Closest = 0;
-		for(int i=0; i<hits.Num(); ++i)
-		{
-			float ClosestDist = FVector::Dist(hits[Closest].GetActor()->GetActorLocation(), Center);
-			float NextDist = FVector::Dist(hits[i].GetActor()->GetActorLocation(), Center);
-
-			if (NextDist < ClosestDist)
-			{
-				Closest = i;
-			}
-		}
-		OtherActor=hits[Closest].GetActor();
-	}
-	bool isMontagePlaying = GetMesh()->GetAnimInstance()->IsAnyMontagePlaying();
-	AEnemy* enemyOverlapped = Cast<AEnemy>(OtherActor);
-	if(enemyOverlapped&&bAttackMode&&!isMontagePlaying&&enemyOverlapped==enemyRef)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("enemy casted"))
-		StartTargetAttack(enemyOverlapped);
-		FTimerDelegate attackDelegate = FTimerDelegate::CreateUObject( this, &AVayneCharacter::StartTargetAttack, enemyOverlapped);
-		GetWorldTimerManager().SetTimer(attackDelayHandle, attackDelegate, attackDelay, true);
-	}
 }
 
 void AVayneCharacter::EndOverlapEnemy(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if(OtherActor)
-	{
-		AEnemy* hpWidgetEnemy = Cast<AEnemy>(OtherActor);
-		if(hpWidgetEnemy)
-		{
-			hpWidgetEnemy->SetHPWidgetInvisible();
-		}
-	}
-	bAttackMode=false;
-	AEnemy* enemy = Cast<AEnemy>(OtherActor);
-	if(enemy&&bAttackMode)
-	{
-		GetWorldTimerManager().ClearTimer(attackDelayHandle);
-	}
 }
 
 void AVayneCharacter::SetWidgetCooldownText()
@@ -524,4 +484,14 @@ void AVayneCharacter::RollingEnable()
 	rollingCooltimeText=5.f;
 	spaceUI->UnHovered();
 	spaceUI->RemoveFromParent();
+}
+
+void AVayneCharacter::EnemyHPWidgetSettings(AEnemy* enemy)
+{
+	// Enemy HP Widget Settings
+	GetWorldTimerManager().ClearTimer(enemy->HPWidgetInvisibleHandle);
+	enemy->enemyHPWidget->HPdynamicMat->SetScalarParameterValue(FName("HPAlpha"), enemy->curHP*0.01-0.001);
+	enemy->HPWidgetComponent->bHiddenInGame=false;
+	enemy->HPWidgetComponent->SetVisibility(true);
+	enemy->SetHPWidgetInvisible();
 }

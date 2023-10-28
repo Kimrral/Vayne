@@ -121,7 +121,7 @@ void UEnemyFSM::TickAttack()
 			}
 		}
 	}
-	if(curTime>=attackDelayTime)
+	if(me->enemyAnim->IsAttackAnimationPlaying()==false)
 	{
 		// 플레이어와의 거리 도출
 		float dist = player->GetDistanceTo(me);
@@ -168,7 +168,7 @@ void UEnemyFSM::TickDie()
 void UEnemyFSM::OnDamageProcess(int damageValue)
 {
 	// 매개변수 damageValue의 값만큼 현재 HP에서 차감한다.
-	me->curHP=FMath::Clamp(me->curHP-=damageValue, 0, 100);
+	me->curHP=FMath::Clamp(me->curHP-=damageValue, 0, me->maxHP);
 	if(me->curHP<=0)
 	{
 		// 해당 HP값을 위젯 머터리얼 파라미터 값에 할당한다.

@@ -19,6 +19,7 @@ void UEnemyAnim::NativeBeginPlay()
 
 void UEnemyAnim::AnimNotify_AttackStart()
 {
+	bIsAttackingAnim=true;
 	UEnemyFSM* fsm = Cast<UEnemyFSM>(me->GetDefaultSubobjectByName(FName("enemyFSM")));
 	if(fsm)
 	{
@@ -29,6 +30,7 @@ void UEnemyAnim::AnimNotify_AttackStart()
 
 void UEnemyAnim::AnimNotify_AttackEnd()
 {
+	bIsAttackingAnim=false;
 	UEnemyFSM* fsm = Cast<UEnemyFSM>(me->GetDefaultSubobjectByName(FName("enemyFSM")));
 	if(fsm)
 	{
@@ -44,5 +46,14 @@ void UEnemyAnim::AnimNotify_DamageEnd()
 void UEnemyAnim::AnimNotify_DieEnd()
 {
 	me->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+}
+
+bool UEnemyAnim::IsAttackAnimationPlaying()
+{
+	if(bIsAttackingAnim)
+	{
+		return true;
+	}
+	return false;
 }
 
