@@ -212,13 +212,14 @@ void AVayneCharacter::SpaceInput()
 	if(bIsRollingAvailable)
 	{
 		bIsRollingAvailable=false;
+		// stop current playing montage
 		StopAnimMontage();
 		if(spaceUI)
 		{
+			// 스페이스 인풋 UI 뷰포트에 출력
 			spaceUI->AddToViewport();
 		}
 		playerController->DisableInput(playerController);
-		//playerController->SetIgnoreMoveInput(true);
 		playerController->Timeline.Stop();
 		RollTimeline.Stop();
 		AttackCirclePlane->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
