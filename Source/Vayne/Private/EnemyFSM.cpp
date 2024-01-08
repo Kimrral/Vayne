@@ -104,53 +104,30 @@ void UEnemyFSM::TickMove()
 
 void UEnemyFSM::TickAttack()
 {
-	// curTime에 DeltaTime 누적
-	curTime+=GetWorld()->DeltaTimeSeconds;
-	if(!bIsAttacking&&curTime>=0.1f)
+	if(player)
 	{
-		me->enemyAnim->bIsAttacking=true;
-		bIsAttacking=true;
-		float dist = player->GetDistanceTo(me);
+		if(me->enemyAnim->IsAttackAnimationPlaying()==false)
 		{
-			if(dist<=attackRange)
+			// 플레이어와의 거리 도출
+			float dist = player->GetDistanceTo(me);
+			// 공격거리보다 멀어졌다면
+			if(dist>attackRange)
 			{
-				if(player)
-				{
-					
-				}
+				// 이동상태로 전이한다
+				SetState(EEnemyState::MOVE);
 			}
 		}
 	}
-	if(me->enemyAnim->IsAttackAnimationPlaying()==false)
+	else
 	{
-		// 플레이어와의 거리 도출
-		float dist = player->GetDistanceTo(me);
-		// 공격거리보다 멀어졌다면
-		if(dist>attackRange)
-		{
-			// 이동상태로 전이한다
-			SetState(EEnemyState::MOVE);
-		}
-		else
-		{
-			curTime=0;
-			bIsAttacking=false;
-			me->enemyAnim->bIsAttacking=false;
-		}
+		SetState(EEnemyState::IDLE);
 	}
 }
 
 void UEnemyFSM::TickDamage()
 {
-	curTime+=GetWorld()->GetDeltaSeconds();
-	// Damage 상태로 전이하고 1.0초가 경과하면
-	if(curTime>0.0f)
-	{
-		// Move 상태로 전이한다.
-		SetState(EEnemyState::MOVE);
-		// 시간 누적 변수 초기화
-		curTime=0;
-	}
+	// Move 상태로 전이한다.
+	SetState(EEnemyState::MOVE);
 }
 
 void UEnemyFSM::TickDie()
